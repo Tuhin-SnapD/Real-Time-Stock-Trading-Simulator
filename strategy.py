@@ -19,5 +19,5 @@ class TradingStrategy:
         signals["signal"] = signals["short_ma"].gt(signals["long_ma"]).astype(int)
         signals["signal"] = signals["signal"].diff().fillna(0)
         signals["signal"] = signals["signal"].replace({1: 1, -1: -1, 0: 0})
-        
+        print(signals[["price", "short_ma", "long_ma", "signal"]].tail())
         return signals[["price", "short_ma", "long_ma", "signal"]]
