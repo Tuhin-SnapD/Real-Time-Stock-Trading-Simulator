@@ -172,3 +172,19 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated reports and data files
+performance_report.txt
+portfolio_values.txt
+*.log
+
+# API keys and sensitive data
+.env
+*.env
+config.ini
+secrets.json
