@@ -11,10 +11,11 @@ A modern, professional web-based real-time stock trading simulator with interact
 
 ### Core Trading Features
 - **Real-time Stock Data**: Live stock price monitoring with Yahoo Finance integration
-- **Advanced Trading Strategy**: Moving average crossover strategy with configurable parameters
+- **Advanced Trading Strategy**: Enhanced moving average crossover strategy with RSI, momentum, and risk management
 - **Portfolio Tracking**: Real-time portfolio value updates and performance metrics
 - **Historical Mode**: Run simulations on historical data for backtesting
 - **Multiple Stocks**: Support for 40+ popular stocks and ETFs
+- **Risk Management**: Built-in stop-loss and profit-taking mechanisms
 
 ### User Interface
 - **Interactive Charts**: Beautiful Plotly charts showing price movements and trading signals
@@ -29,6 +30,7 @@ A modern, professional web-based real-time stock trading simulator with interact
 - **Error Handling**: Robust error handling and retry mechanisms
 - **Configuration Management**: Environment-based configuration system
 - **Testing Suite**: Comprehensive unit tests for core functionality
+- **Performance Optimization**: Efficient data processing and caching
 
 ## 📁 Project Structure
 
@@ -38,7 +40,7 @@ Real-Time-Stock-Trading-Simulator/
 │   ├── core/                     # Core trading functionality
 │   │   ├── __init__.py
 │   │   ├── data_fetcher.py      # Stock data fetching
-│   │   └── strategy.py          # Trading strategy implementation
+│   │   └── strategy.py          # Enhanced trading strategy implementation
 │   ├── api/                      # API endpoints
 │   │   ├── __init__.py
 │   │   └── routes.py            # Flask routes and API handlers
@@ -56,11 +58,8 @@ Real-Time-Stock-Trading-Simulator/
 │   ├── images/                  # Image assets
 │   └── templates/               # HTML templates
 │       └── index.html           # Main dashboard template
-├── tests/                        # Test suite
-│   ├── __init__.py
-│   ├── test_data_fetcher.py     # Data fetcher tests
-│   └── test_strategy.py         # Strategy tests
 ├── docs/                         # Documentation
+│   └── API.md                   # API documentation
 ├── app.py                       # Main application entry point
 ├── requirements.txt             # Python dependencies
 ├── setup.py                     # Package setup
@@ -136,12 +135,27 @@ make lint
 2. **Select Date**: Choose a specific date for backtesting
 3. **Run Simulation**: Start the simulator to see how your strategy would have performed
 
-### Trading Strategy
+### Enhanced Trading Strategy
 
-The simulator uses a **Moving Average Crossover** strategy:
-- **Buy Signal**: When short-term moving average crosses above long-term moving average
-- **Sell Signal**: When short-term moving average crosses below long-term moving average
-- **Configurable Parameters**: Adjust short and long window periods
+The simulator uses an **Advanced Moving Average Crossover** strategy with multiple confirmations:
+
+#### Core Strategy Components:
+- **Moving Average Crossover**: Golden cross (buy) and death cross (sell) signals
+- **RSI Filter**: Relative Strength Index to avoid overbought/oversold conditions
+- **Momentum Analysis**: Price and moving average momentum confirmation
+- **Risk Management**: Automatic stop-loss and profit-taking mechanisms
+
+#### Strategy Parameters:
+- **Short Window**: Fast moving average period (default: 5)
+- **Long Window**: Slow moving average period (default: 20)
+- **Profit Threshold**: Target profit percentage (default: 2%)
+- **Stop Loss**: Maximum loss percentage (default: 1%)
+- **RSI Window**: RSI calculation period (default: 14)
+
+#### Signal Generation:
+- **Buy Signal**: When short MA crosses above long MA + RSI < 75 + positive momentum
+- **Sell Signal**: When short MA crosses below long MA + RSI > 25 + stop-loss/profit-taking
+- **Position Sizing**: Risk-based position sizing (2% risk per trade)
 
 ## 🔧 Configuration
 
@@ -163,8 +177,10 @@ DEFAULT_PERIOD=1d
 DEFAULT_INITIAL_CASH=50000
 
 # Strategy Configuration
-DEFAULT_SHORT_WINDOW=2
-DEFAULT_LONG_WINDOW=5
+DEFAULT_SHORT_WINDOW=5
+DEFAULT_LONG_WINDOW=20
+DEFAULT_PROFIT_THRESHOLD=0.02
+DEFAULT_STOP_LOSS=0.01
 ```
 
 ### Available Stocks
@@ -265,6 +281,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Email**: your.email@example.com
 
 ## 🔄 Changelog
+
+### Version 1.1.0 (Latest)
+- Enhanced trading strategy with RSI and momentum indicators
+- Improved risk management with stop-loss and profit-taking
+- Better signal generation with multiple confirmations
+- Performance optimizations and bug fixes
 
 ### Version 1.0.0
 - Initial release with real-time trading simulation
