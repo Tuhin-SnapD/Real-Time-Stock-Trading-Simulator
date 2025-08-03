@@ -48,25 +48,8 @@ async def run_simulator_async(symbol="AAPL", interval="1m", period="1d", initial
                 await asyncio.sleep(60)
                 continue
                 
-            # Find the most recent non-zero signal
-            non_zero_signals = signals[signals["signal"] != 0]
-            if not non_zero_signals.empty:
-                # If we have no holdings, prioritize buy signals
-                if not portfolio.holdings:
-                    buy_signals = non_zero_signals[non_zero_signals["signal"] == 1]
-                    if not buy_signals.empty:
-                        latest_signal = int(buy_signals["signal"].iloc[-1])
-                        latest_price = buy_signals["price"].iloc[-1]
-                    else:
-                        latest_signal = 0
-                        latest_price = signals["price"].iloc[-1]
-                else:
-                    # If we have holdings, use the most recent signal
-                    latest_signal = int(non_zero_signals["signal"].iloc[-1])
-                    latest_price = non_zero_signals["price"].iloc[-1]
-            else:
-                latest_signal = 0
-                latest_price = signals["price"].iloc[-1]
+            latest_signal = int(signals["signal"].iloc[-1])  # Ensure integer signal
+            latest_price = signals["price"].iloc[-1]
             
             # Validate price is reasonable
             if latest_price <= 0 or pd.isna(latest_price):
