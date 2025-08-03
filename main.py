@@ -34,10 +34,29 @@ async def run_simulator_async(symbol="AAPL", interval="1m", period="1h", initial
                 await asyncio.sleep(60)
                 continue
 
+            # Validate data has required columns
+            required_columns = ["Open", "High", "Low", "Close", "Volume"]
+            if not all(col in data.columns for col in required_columns):
+                print(f"Data missing required columns. Available: {data.columns.tolist()}")
+                await asyncio.sleep(60)
+                continue
+
             # Generate signals
             signals = strategy.generate_signals(data)
+            if signals.empty:
+                print("No signals generated. Retrying...")
+                await asyncio.sleep(60)
+                continue
+                
             latest_signal = int(signals["signal"].iloc[-1])  # Ensure integer signal
             latest_price = signals["price"].iloc[-1]
+            
+            # Validate price is reasonable
+            if latest_price <= 0 or pd.isna(latest_price):
+                print(f"Invalid price: {latest_price}. Retrying...")
+                await asyncio.sleep(60)
+                continue
+                
             print(f"Latest signal: {latest_signal}, Latest price: {latest_price}")
             print(f"Signal details: {signals[['price', 'short_ma', 'long_ma', 'signal']].tail(5)}")
 
@@ -78,6 +97,8 @@ async def run_simulator_async(symbol="AAPL", interval="1m", period="1h", initial
 
         except Exception as e:
             print(f"Error in simulator loop: {e}")
+            import traceback
+            traceback.print_exc()
             await asyncio.sleep(60)  # Wait before retrying
 
 def parse_args():

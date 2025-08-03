@@ -16,8 +16,15 @@ class TradingStrategy:
         
         # Generate signals: 1 for buy, -1 for sell, 0 for hold
         signals["signal"] = 0
-        signals["signal"] = signals["short_ma"].gt(signals["long_ma"]).astype(int)
-        signals["signal"] = signals["signal"].diff().fillna(0)
-        signals["signal"] = signals["signal"].replace({1: 1, -1: -1, 0: 0})
+        
+        # Create crossover signals
+        # When short MA crosses above long MA: buy signal (1)
+        # When short MA crosses below long MA: sell signal (-1)
+        signals["crossover"] = (signals["short_ma"] > signals["long_ma"]).astype(int)
+        signals["signal"] = signals["crossover"].diff().fillna(0)
+        
+        # Clean up the signal column
+        signals = signals.drop("crossover", axis=1)
+        
         print(signals[["price", "short_ma", "long_ma", "signal"]].tail())
         return signals[["price", "short_ma", "long_ma", "signal"]]

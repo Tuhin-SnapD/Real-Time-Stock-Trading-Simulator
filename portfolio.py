@@ -60,7 +60,13 @@ class Portfolio:
         returns = pd.Series(self.portfolio_values).pct_change().dropna()
         if len(returns) == 0:
             return 0.0
-        return (returns.mean() - risk_free_rate) / returns.std() * np.sqrt(252)
+        
+        # Avoid division by zero
+        returns_std = returns.std()
+        if returns_std == 0:
+            return 0.0
+            
+        return (returns.mean() - risk_free_rate) / returns_std * np.sqrt(252)
 
     def calculate_max_drawdown(self):
         """Calculate maximum drawdown as a percentage."""
