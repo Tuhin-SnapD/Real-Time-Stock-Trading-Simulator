@@ -2,6 +2,18 @@
 
 A Python-based real-time stock trading simulator that fetches live market data using `yfinance`, executes trades based on a moving average crossover strategy, stores trades in an SQLite database, and generates performance reports with key metrics like total return, Sharpe ratio, and max drawdown. Built to demonstrate e-trading system development, data integration, and performance analysis for financial applications.
 
+## 🚀 Recent Updates
+
+**Latest Version**: Enhanced with comprehensive bug fixes and improvements:
+- ✅ **Fixed Critical Strategy Logic Bug** - Trading signals now generate correctly
+- ✅ **Enhanced Error Handling** - Robust handling of API failures and data issues
+- ✅ **Improved Data Validation** - Better quality checks for market data
+- ✅ **Division by Zero Protection** - Safe calculation of performance metrics
+- ✅ **Virtual Environment Support** - Isolated dependency management
+- ✅ **Comprehensive Testing** - All components verified and working
+
+See [BUGFIXES.md](BUGFIXES.md) for detailed information about all fixes and improvements.
+
 ## Table of Contents
 - [Features](#features)
 - [Prerequisites](#prerequisites)
@@ -10,6 +22,7 @@ A Python-based real-time stock trading simulator that fetches live market data u
 - [Usage](#usage)
 - [Sample Output](#sample-output)
 - [Troubleshooting](#troubleshooting)
+- [Bug Fixes](#bug-fixes)
 - [Future Improvements](#future-improvements)
 - [License](#license)
 
@@ -19,39 +32,47 @@ A Python-based real-time stock trading simulator that fetches live market data u
 - **Portfolio Management**: Tracks cash, holdings, and portfolio value with transaction costs (0.1% per trade).
 - **Database Storage**: Saves trade details (timestamp, symbol, type, price, quantity) in an SQLite database.
 - **Performance Reporting**: Generates reports with metrics including total return, Sharpe ratio, and max drawdown.
-- **Visualization**: Plots price trends, moving averages, and portfolio value over time.
-- **Robust Error Handling**: Manages API failures, stale data, and database compatibility (e.g., timestamp conversion).
+- **Visualization**: Plots price trends, moving averages, and portfolio value over time using Plotly.
+- **Robust Error Handling**: Comprehensive error handling for API failures, data validation, and edge cases.
+- **Virtual Environment Support**: Isolated dependency management for consistent deployment.
 
 ## Prerequisites
 - **Python**: Version 3.8 or higher.
 - **US Market Hours**: For real-time data, run during 9:30 AM–4:00 PM ET (7:00 PM–1:30 AM IST).
-- **Dependencies**:
-  - `yfinance`: For market data.
-  - `pandas`: For data processing.
-  - `numpy`: For numerical calculations.
-  - `matplotlib`: For visualization.
-  - `sqlite3`: For database storage (built-in with Python).
+- **Dependencies**: All dependencies are managed via `requirements.txt`
 
 ## Installation
+
+### Option 1: Using Virtual Environment (Recommended)
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/your-username/stock-trading-simulator.git
    cd stock-trading-simulator
    ```
 
-2. **Create a Virtual Environment** (optional but recommended):
+2. **Create and Activate Virtual Environment**:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   # On Windows:
+   venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
    ```
 
 3. **Install Dependencies**:
    ```bash
-   pip install yfinance pandas numpy matplotlib
+   pip install -r requirements.txt
    ```
 
+### Option 2: Direct Installation
+```bash
+pip install yfinance pandas numpy plotly requests
+```
+
 4. **Verify Setup**:
-   Ensure all files (`main.py`, `data_fetcher.py`, etc.) are in the project directory.
+   ```bash
+   python -c "import main, data_fetcher, strategy, portfolio, database, visualizer, report; print('✅ All modules imported successfully')"
+   ```
 
 ## Project Structure
 ```
@@ -64,9 +85,12 @@ stock-trading-simulator/
 ├── database.py          # Stores trades in SQLite database
 ├── visualizer.py        # Plots price trends and portfolio value
 ├── report.py            # Generates performance reports
+├── requirements.txt     # Python dependencies with exact versions
+├── BUGFIXES.md          # Detailed documentation of all fixes
 ├── trades.db            # SQLite database for trade storage
 ├── portfolio_values.txt # Stores portfolio value history
 ├── performance_report.txt # Output of performance report
+├── venv/                # Virtual environment (created during setup)
 └── README.md            # Project documentation
 ```
 
@@ -144,26 +168,40 @@ A plot showing price, moving averages, and portfolio value is displayed after th
 
 ## Troubleshooting
 - **Portfolio Value Stuck at `$50000.00`**:
-  - Ensure you’re running during US market hours (7:00 PM–1:30 AM IST).
+  - Ensure you're running during US market hours (7:00 PM–1:30 AM IST).
   - Check console output for `Fetched X rows`. If `X` is low or timestamps are old, try `--interval 5m` or `--period 2h`.
   - Update `yfinance`: `pip install yfinance --upgrade`.
 - **"No trades found in database"**:
   - Run the simulator first to populate `trades.db`.
   - Verify trades in console (`Executed buy/sell`).
   - Delete `trades.db` to reset the database if schema issues occur.
-- **Database Errors**:
-  - If `Error binding parameter: type 'Timestamp'`, ensure `main.py` uses `.isoformat()` for timestamps.
+- **Import Errors**:
+  - Ensure virtual environment is activated: `venv\Scripts\activate` (Windows) or `source venv/bin/activate` (macOS/Linux)
+  - Install dependencies: `pip install -r requirements.txt`
 - **No Signals**:
   - Reduce strategy windows in `main.py` (e.g., `short_window=1`, `long_window=3`).
   - Try a volatile stock: `--symbol TSLA`.
 - **Share Issues**:
   - Provide console output, `performance_report.txt`, and `portfolio_values.txt` contents.
 
+## Bug Fixes
+This project has been extensively tested and debugged. Key fixes include:
+
+- **Critical Strategy Logic**: Fixed broken signal generation algorithm
+- **Error Handling**: Added comprehensive error handling for all components
+- **Data Validation**: Enhanced validation for API responses and data quality
+- **Performance Metrics**: Protected against division by zero errors
+- **Visualization**: Fixed array length mismatches in plotting
+
+See [BUGFIXES.md](BUGFIXES.md) for complete details.
+
 ## Future Improvements
 - Add support for multiple stocks in a single run.
 - Implement alternative strategies (e.g., RSI, MACD).
 - Generate PDF reports using LaTeX for professional output.
 - Deploy as a cloud-based application with API integration.
+- Add backtesting capabilities for historical data analysis.
+- Implement risk management features (stop-loss, position sizing).
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

@@ -3,6 +3,21 @@ from plotly.subplots import make_subplots
 
 def plot_results(signals, portfolio_values, symbol="AAPL"):
     """Plot price, moving averages, signals, and portfolio value."""
+    # Validate inputs
+    if signals.empty:
+        print("Warning: No signals data to plot")
+        return
+    
+    if not portfolio_values:
+        print("Warning: No portfolio values to plot")
+        return
+    
+    # Ensure portfolio_values has the same length as signals
+    if len(portfolio_values) != len(signals):
+        print(f"Warning: Portfolio values length ({len(portfolio_values)}) doesn't match signals length ({len(signals)})")
+        # Truncate portfolio_values to match signals length
+        portfolio_values = portfolio_values[:len(signals)]
+    
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
                         subplot_titles=("Price and Signals", "Portfolio Value"),
                         vertical_spacing=0.1)
@@ -15,10 +30,14 @@ def plot_results(signals, portfolio_values, symbol="AAPL"):
     # Plot buy/sell signals
     buy_signals = signals[signals["signal"] == 1]
     sell_signals = signals[signals["signal"] == -1]
-    fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals["price"], mode="markers", 
-                             name="Buy", marker=dict(symbol="triangle-up", size=10, color="green")), row=1, col=1)
-    fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals["price"], mode="markers", 
-                             name="Sell", marker=dict(symbol="triangle-down", size=10, color="red")), row=1, col=1)
+    
+    if not buy_signals.empty:
+        fig.add_trace(go.Scatter(x=buy_signals.index, y=buy_signals["price"], mode="markers", 
+                                 name="Buy", marker=dict(symbol="triangle-up", size=10, color="green")), row=1, col=1)
+    
+    if not sell_signals.empty:
+        fig.add_trace(go.Scatter(x=sell_signals.index, y=sell_signals["price"], mode="markers", 
+                                 name="Sell", marker=dict(symbol="triangle-down", size=10, color="red")), row=1, col=1)
 
     # Plot portfolio value
     fig.add_trace(go.Scatter(x=signals.index, y=portfolio_values, name="Portfolio Value"), row=2, col=1)
