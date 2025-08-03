@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Stock Trading Simulator</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .header h1 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .control-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-running {
+            background-color: #28a745;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-stopped {
+            background-color: #dc3545;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .trades-table {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .badge-buy {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .badge-sell {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .stats-card h3 {
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+                 .stats-card p {
+             margin-bottom: 0;
+             font-size: 1.2em;
+         }
+         
+         .form-control-plaintext {
+             background-color: #f8f9fa;
+             border: 1px solid #e9ecef;
+             border-radius: 0.375rem;
+             padding: 0.375rem 0.75rem;
+         }
+         
+         .text-primary {
+             color: #667eea !important;
+         }
+         
+         .form-select {
+             border: 2px solid #e9ecef;
+             border-radius: 10px;
+             transition: all 0.3s ease;
+         }
+         
+         .form-select:focus {
+             border-color: #667eea;
+             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+         }
+         
+                 .form-select option {
+            padding: 8px;
+        }
+        
+        .real-time-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #28a745;
+            border-radius: 50%;
+            margin-left: 8px;
+            animation: realTimePulse 1s infinite;
+        }
+        
+        @keyframes realTimePulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .chart-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chart-title h4 {
+            margin: 0;
+        }
+        
+        .update-status {
+            font-size: 0.8em;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-chart-line"></i> Real-Time Stock Trading Simulator</h1>
+                <p>Monitor live trades and stock performance with interactive charts</p>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="stockSymbol" class="form-label">Stock Symbol</label>
+                            <select class="form-select" id="stockSymbol" required>
+                                <option value="">Select a stock symbol</option>
+                                <option value="AAPL" selected>AAPL - Apple Inc.</option>
+                                <option value="MSFT">MSFT - Microsoft Corporation</option>
+                                <option value="GOOGL">GOOGL - Alphabet Inc. (Google)</option>
+                                <option value="AMZN">AMZN - Amazon.com Inc.</option>
+                                <option value="TSLA">TSLA - Tesla Inc.</option>
+                                <option value="META">META - Meta Platforms Inc.</option>
+                                <option value="NVDA">NVDA - NVIDIA Corporation</option>
+                                <option value="NFLX">NFLX - Netflix Inc.</option>
+                                <option value="JPM">JPM - JPMorgan Chase & Co.</option>
+                                <option value="JNJ">JNJ - Johnson & Johnson</option>
+                                <option value="V">V - Visa Inc.</option>
+                                <option value="PG">PG - Procter & Gamble Co.</option>
+                                <option value="UNH">UNH - UnitedHealth Group Inc.</option>
+                                <option value="HD">HD - Home Depot Inc.</option>
+                                <option value="DIS">DIS - Walt Disney Co.</option>
+                                <option value="PYPL">PYPL - PayPal Holdings Inc.</option>
+                                <option value="ADBE">ADBE - Adobe Inc.</option>
+                                <option value="CRM">CRM - Salesforce Inc.</option>
+                                <option value="INTC">INTC - Intel Corporation</option>
+                                <option value="ORCL">ORCL - Oracle Corporation</option>
+                                <option value="IBM">IBM - International Business Machines</option>
+                                <option value="CSCO">CSCO - Cisco Systems Inc.</option>
+                                <option value="PFE">PFE - Pfizer Inc.</option>
+                                <option value="KO">KO - Coca-Cola Co.</option>
+                                <option value="PEP">PEP - PepsiCo Inc.</option>
+                                <option value="ABT">ABT - Abbott Laboratories</option>
+                                <option value="TMO">TMO - Thermo Fisher Scientific</option>
+                                <option value="COST">COST - Costco Wholesale Corp.</option>
+                                <option value="WMT">WMT - Walmart Inc.</option>
+                                <option value="BAC">BAC - Bank of America Corp.</option>
+                                <option value="WFC">WFC - Wells Fargo & Co.</option>
+                                <option value="GS">GS - Goldman Sachs Group Inc.</option>
+                                <option value="MS">MS - Morgan Stanley</option>
+                                <option value="SPY">SPY - SPDR S&P 500 ETF</option>
+                                <option value="QQQ">QQQ - Invesco QQQ Trust</option>
+                                <option value="IWM">IWM - iShares Russell 2000 ETF</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="interval" class="form-label">Interval</label>
+                            <select class="form-select" id="interval">
+                                <option value="1m">1 Minute</option>
+                                <option value="2m">2 Minutes</option>
+                                <option value="5m">5 Minutes</option>
+                                <option value="15m">15 Minutes</option>
+                                <option value="30m">30 Minutes</option>
+                                <option value="1h">1 Hour</option>
+                                <option value="1d">1 Day</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="period" class="form-label">Period</label>
+                            <select class="form-select" id="period">
+                                <option value="1d">1 Day</option>
+                                <option value="5d">5 Days</option>
+                                <option value="1wk">1 Week</option>
+                                <option value="1mo">1 Month</option>
+                                <option value="3mo">3 Months</option>
+                                <option value="6mo">6 Months</option>
+                                <option value="1y">1 Year</option>
+                            </select>
+                        </div>
+                    </div>
+                                         <div class="col-md-3">
+                         <div class="form-group">
+                             <label for="initialCash" class="form-label">Initial Cash ($)</label>
+                             <input type="number" class="form-control" id="initialCash" placeholder="Enter amount" min="1000" value="5000">
+                         </div>
+                     </div>
+                 </div>
+                 <div class="row">
+                     <div class="col-md-4">
+                         <div class="form-group">
+                             <label for="selectedDate" class="form-label">Historical Date (Optional)</label>
+                             <input type="date" class="form-control" id="selectedDate" placeholder="Leave empty for current data" max="">
+                             <small class="form-text text-muted">Select a specific date to run the algorithm on historical data (1m data available for last 30 days only)</small>
+                         </div>
+                     </div>
+                     <div class="col-md-4">
+                         <div class="form-group">
+                             <label class="form-label">Date Info</label>
+                             <div class="form-control-plaintext" id="dateInfo">
+                                 <small class="text-muted">Current mode: Real-time data</small>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="col-md-4">
+                         <div class="form-group">
+                             <label for="strategyParams" class="form-label">Strategy Parameters</label>
+                             <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#strategyModal">
+                                 <i class="fas fa-cog"></i> Configure Strategy
+                             </button>
+                             <small class="form-text text-muted">Adjust profit targets, stop losses, and moving averages</small>
+                         </div>
+                     </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <button id="startBtn" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-play"></i> Start Simulator
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button id="stopBtn" class="btn btn-danger btn-lg w-100" disabled>
+                            <i class="fas fa-stop"></i> Stop Simulator
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="status-indicator status-stopped" id="statusIndicator"></span>
+                            <span id="statusText">Simulator Status: Stopped</span>
+                        </div>
+                        <div class="text-center mt-2">
+                            <small class="text-muted" id="configInfo">Configure your trading parameters above</small>
+                            <div class="mt-1">
+                                <small class="text-warning" id="weekendMode" style="display: none;">
+                                    <i class="fas fa-exclamation-triangle"></i> Weekend Mode: Using historical data with simulated trades for testing
+                                </small>
+                            </div>
+                            <div class="mt-1">
+                                <small class="text-info" id="updateFrequency">
+                                    <i class="fas fa-sync-alt"></i> Update Frequency: <span id="frequencyValue">-</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row" id="statsRow" style="display: none;">
+                <div class="col-md-2">
+                    <div class="stats-card">
+                        <h3>Total Trades</h3>
+                        <p id="totalTrades">0</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stats-card">
+                        <h3>Win Rate</h3>
+                        <p id="winRate">0%</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stats-card">
+                        <h3>Total Return</h3>
+                        <p id="totalReturn">$0</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stats-card">
+                        <h3>Return %</h3>
+                        <p id="returnPercentage">0%</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stats-card">
+                        <h3>Max Drawdown</h3>
+                        <p id="maxDrawdown">0%</p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="stats-card">
+                        <h3>Current Value</h3>
+                        <p id="currentValue">$0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Chart -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <h4><i class="fas fa-chart-area"></i> Stock Price & Signals</h4>
+                    <div class="update-status" id="stockUpdateStatus">
+                        <span class="real-time-indicator"></span>
+                        <span>Live Updates</span>
+                    </div>
+                </div>
+                <div id="stockChart" style="height: 400px;"></div>
+            </div>
+
+            <!-- Portfolio Chart -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <h4><i class="fas fa-chart-line"></i> Portfolio Value</h4>
+                    <div class="update-status" id="portfolioUpdateStatus">
+                        <span class="real-time-indicator"></span>
+                        <span>Live Updates</span>
+                    </div>
+                </div>
+                <div id="portfolioChart" style="height: 300px;"></div>
+            </div>
+
+            <!-- Trades Table -->
+            <div class="trades-table">
+                <h4><i class="fas fa-list"></i> Recent Trades</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Symbol</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradesTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No trades yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strategy Configuration Modal -->
+    <div class="modal fade" id="strategyModal" tabindex="-1" aria-labelledby="strategyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="strategyModalLabel">
+                        <i class="fas fa-cog"></i> Trading Strategy Configuration
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="shortWindow" class="form-label">Short MA Window</label>
+                                <input type="number" class="form-control" id="shortWindow" value="5" min="2" max="50">
+                                <small class="form-text text-muted">Shorter moving average period</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="longWindow" class="form-label">Long MA Window</label>
+                                <input type="number" class="form-control" id="longWindow" value="20" min="5" max="200">
+                                <small class="form-text text-muted">Longer moving average period</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="profitThreshold" class="form-label">Profit Target (%)</label>
+                                <input type="number" class="form-control" id="profitThreshold" value="1.5" min="0.1" max="10" step="0.1">
+                                <small class="form-text text-muted">Percentage gain to take profits</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="stopLoss" class="form-label">Stop Loss (%)</label>
+                                <input type="number" class="form-control" id="stopLoss" value="1.0" min="0.1" max="10" step="0.1">
+                                <small class="form-text text-muted">Percentage loss to stop out</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="riskPerTrade" class="form-label">Risk Per Trade (%)</label>
+                                <input type="number" class="form-control" id="riskPerTrade" value="2.0" min="0.1" max="10" step="0.1">
+                                <small class="form-text text-muted">Portfolio percentage to risk per trade</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="rsiOverbought" class="form-label">RSI Overbought</label>
+                                <input type="number" class="form-control" id="rsiOverbought" value="70" min="50" max="90">
+                                <small class="form-text text-muted">RSI level to avoid buying</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveStrategyBtn">
+                        <i class="fas fa-save"></i> Save Strategy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let stockChart = null;
+        let portfolioChart = null;
+        let updateInterval = null;
+
+        // Initialize charts
+        function initCharts() {
+            // Stock chart
+            const stockData = {
+                x: [],
+                y: [],
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Price',
+                line: { color: '#667eea' }
+            };
+
+            const layout = {
+                title: 'Stock Price & Trading Signals',
+                xaxis: { title: 'Time' },
+                yaxis: { title: 'Price ($)' },
+                showlegend: true,
+                height: 400
+            };
+
+            stockChart = Plotly.newPlot('stockChart', [stockData], layout);
+
+            // Portfolio chart
+            const portfolioData = {
+                x: [],
+                y: [],
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Portfolio Value',
+                line: { color: '#28a745' }
+            };
+
+            const portfolioLayout = {
+                title: 'Portfolio Value Over Time',
+                xaxis: { title: 'Time' },
+                yaxis: { title: 'Value ($)' },
+                showlegend: true,
+                height: 300
+            };
+
+            portfolioChart = Plotly.newPlot('portfolioChart', [portfolioData], portfolioLayout);
+        }
+
+        // Get current symbol for chart titles
+        function getCurrentSymbol() {
+            const symbol = document.getElementById('stockSymbol').value.trim();
+            return symbol || 'Stock';
+        }
+
+        // Update stock chart with enhanced real-time animations
+        function updateStockChart(data) {
+            if (!data || !data.timestamps || !data.prices) return;
+
+            const traces = [
+                {
+                    x: data.timestamps,
+                    y: data.prices,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Price',
+                    line: { color: '#667eea', width: 3, shape: 'spline' },
+                    fill: 'tonexty',
+                    fillcolor: 'rgba(102, 126, 234, 0.1)'
+                },
+                {
+                    x: data.timestamps,
+                    y: data.short_ma,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Short MA',
+                    line: { color: '#ff6b6b', width: 2, dash: 'dot' }
+                },
+                {
+                    x: data.timestamps,
+                    y: data.long_ma,
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Long MA',
+                    line: { color: '#feca57', width: 2, dash: 'dash' }
+                }
+            ];
+
+            // Add buy/sell signals with enhanced styling
+            if (data.signals) {
+                const buySignals = [];
+                const sellSignals = [];
+                const buyPrices = [];
+                const sellPrices = [];
+
+                data.signals.forEach((signal, index) => {
+                    if (signal === 1) {
+                        buySignals.push(data.timestamps[index]);
+                        buyPrices.push(data.prices[index]);
+                    } else if (signal === -1) {
+                        sellSignals.push(data.timestamps[index]);
+                        sellPrices.push(data.prices[index]);
+                    }
+                });
+
+                if (buySignals.length > 0) {
+                    traces.push({
+                        x: buySignals,
+                        y: buyPrices,
+                        type: 'scatter',
+                        mode: 'markers',
+                        name: 'Buy Signal',
+                        marker: { 
+                            symbol: 'triangle-up', 
+                            size: 18, 
+                            color: '#28a745',
+                            line: { width: 2, color: '#ffffff' }
+                        }
+                    });
+                }
+
+                if (sellSignals.length > 0) {
+                    traces.push({
+                        x: sellSignals,
+                        y: sellPrices,
+                        type: 'scatter',
+                        mode: 'markers',
+                        name: 'Sell Signal',
+                        marker: { 
+                            symbol: 'triangle-down', 
+                            size: 18, 
+                            color: '#dc3545',
+                            line: { width: 2, color: '#ffffff' }
+                        }
+                    });
+                }
+            }
+
+            // Enhanced layout with real-time features
+            const layout = {
+                title: {
+                    text: `${getCurrentSymbol()} Real-Time Price & Trading Signals`,
+                    font: { size: 18, color: '#2c3e50' }
+                },
+                xaxis: { 
+                    title: 'Time',
+                    rangeslider: { visible: false },
+                    showgrid: true,
+                    gridcolor: 'rgba(0,0,0,0.1)'
+                },
+                yaxis: { 
+                    title: 'Price ($)',
+                    showgrid: true,
+                    gridcolor: 'rgba(0,0,0,0.1)',
+                    autorange: true // Enable auto-scaling
+                },
+                showlegend: true,
+                height: 400,
+                margin: { l: 60, r: 60, t: 60, b: 60 },
+                plot_bgcolor: 'rgba(255,255,255,0.8)',
+                paper_bgcolor: 'rgba(255,255,255,0.8)',
+                hovermode: 'x unified',
+                transition: {
+                    duration: 300,
+                    easing: 'cubic-in-out'
+                }
+            };
+
+            // Use Plotly.react for smoother updates with animation
+            Plotly.react('stockChart', traces, layout, {
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                responsive: true
+            });
+        }
+
+        // Update portfolio chart with enhanced real-time animations and baseline
+        function updatePortfolioChart(data) {
+            if (!data || !data.timestamps || !data.values) return;
+
+            const trace = {
+                x: data.timestamps,
+                y: data.values,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Portfolio Value',
+                line: { color: '#28a745', width: 4, shape: 'spline' },
+                fill: 'tonexty',
+                fillcolor: 'rgba(40, 167, 69, 0.1)'
+            };
+
+            // Calculate baseline (buy & hold strategy)
+            const baselineValues = calculateBaselineValues(data);
+            const baselineTrace = {
+                x: data.timestamps,
+                y: baselineValues,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Baseline (Buy & Hold)',
+                line: { color: '#95a5a6', width: 2, dash: 'dot' },
+                opacity: 0.7
+            };
+
+            const layout = {
+                title: {
+                    text: `${getCurrentSymbol()} Real-Time Portfolio Value`,
+                    font: { size: 16, color: '#2c3e50' }
+                },
+                xaxis: { 
+                    title: 'Time',
+                    rangeslider: { visible: false },
+                    showgrid: true,
+                    gridcolor: 'rgba(0,0,0,0.1)'
+                },
+                yaxis: { 
+                    title: 'Value ($)',
+                    showgrid: true,
+                    gridcolor: 'rgba(0,0,0,0.1)',
+                    autorange: true // Enable auto-scaling
+                },
+                showlegend: true,
+                height: 300,
+                margin: { l: 60, r: 60, t: 60, b: 60 },
+                plot_bgcolor: 'rgba(255,255,255,0.8)',
+                paper_bgcolor: 'rgba(255,255,255,0.8)',
+                hovermode: 'x unified',
+                transition: {
+                    duration: 300,
+                    easing: 'cubic-in-out'
+                }
+            };
+
+            Plotly.react('portfolioChart', [trace, baselineTrace], layout, {
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                responsive: true
+            });
+        }
+
+        // Calculate baseline values for buy & hold strategy
+        function calculateBaselineValues(data) {
+            if (!data || !data.timestamps || !data.values || data.values.length === 0) return [];
+            
+            // Use initial cash from API response if available, otherwise from form
+            const initialCash = data.initial_cash || parseFloat(document.getElementById('initialCash').value) || 5000;
+            const baselineValues = [];
+            
+            // Use actual price data if available, otherwise estimate
+            if (data.prices && data.prices.length > 0) {
+                const firstPrice = data.prices[0];
+                const sharesOwned = initialCash / firstPrice;
+                
+                data.prices.forEach((price, index) => {
+                    const baselineValue = sharesOwned * price;
+                    baselineValues.push(baselineValue);
+                });
+            } else {
+                // Fallback: estimate based on portfolio value changes
+                const firstValue = data.values[0];
+                const firstPrice = firstValue / initialCash; // Estimate initial price
+                
+                data.values.forEach((value, index) => {
+                    // Estimate current price based on portfolio value
+                    const currentPrice = value / initialCash;
+                    const sharesOwned = initialCash / firstPrice;
+                    const baselineValue = sharesOwned * currentPrice;
+                    baselineValues.push(baselineValue);
+                });
+            }
+            
+            return baselineValues;
+        }
+
+        // Update trades table
+        function updateTradesTable(trades) {
+            const tbody = document.getElementById('tradesTableBody');
+            
+            if (!trades || trades.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No trades yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            trades.slice(-10).reverse().forEach(trade => {
+                const row = document.createElement('tr');
+                const time = new Date(trade.time).toLocaleString();
+                const typeClass = trade.type === 'buy' ? 'badge-buy' : 'badge-sell';
+                
+                row.innerHTML = `
+                    <td>${time}</td>
+                    <td>${trade.symbol}</td>
+                    <td><span class="badge ${typeClass}">${trade.type.toUpperCase()}</span></td>
+                    <td>$${trade.price.toFixed(2)}</td>
+                    <td>${trade.quantity}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update statistics with performance metrics
+        async function updateStats(trades) {
+            if (!trades) return;
+
+            try {
+                // Fetch performance metrics from API
+                const response = await fetch('/api/performance-metrics');
+                if (response.ok) {
+                    const metrics = await response.json();
+                    
+                    document.getElementById('totalTrades').textContent = metrics.total_trades;
+                    document.getElementById('winRate').textContent = `${metrics.win_rate.toFixed(1)}%`;
+                    document.getElementById('totalReturn').textContent = `$${metrics.total_return.toFixed(2)}`;
+                    document.getElementById('returnPercentage').textContent = `${metrics.total_return_percentage.toFixed(2)}%`;
+                    document.getElementById('maxDrawdown').textContent = `${metrics.max_drawdown.toFixed(2)}%`;
+                    document.getElementById('currentValue').textContent = `$${metrics.current_value.toFixed(2)}`;
+                    
+                    // Color code the return percentage
+                    const returnElement = document.getElementById('returnPercentage');
+                    if (metrics.is_profitable) {
+                        returnElement.style.color = '#28a745';
+                    } else {
+                        returnElement.style.color = '#dc3545';
+                    }
+                    
+                    document.getElementById('statsRow').style.display = 'flex';
+                } else {
+                    // Fallback to basic stats if API fails
+                    updateBasicStats(trades);
+                }
+            } catch (error) {
+                console.error('Error fetching performance metrics:', error);
+                updateBasicStats(trades);
+            }
+        }
+        
+        // Fallback function for basic statistics
+        function updateBasicStats(trades) {
+            const totalTrades = trades.length;
+            const buyOrders = trades.filter(t => t.type === 'buy').length;
+            const sellOrders = trades.filter(t => t.type === 'sell').length;
+            
+            document.getElementById('totalTrades').textContent = totalTrades;
+            document.getElementById('winRate').textContent = 'N/A';
+            document.getElementById('totalReturn').textContent = 'N/A';
+            document.getElementById('returnPercentage').textContent = 'N/A';
+            document.getElementById('maxDrawdown').textContent = 'N/A';
+            document.getElementById('currentValue').textContent = 'N/A';
+            document.getElementById('statsRow').style.display = 'flex';
+        }
+
+        // Start simulator
+        async function startSimulator() {
+            const symbol = document.getElementById('stockSymbol').value.trim();
+            const interval = document.getElementById('interval').value;
+            const period = document.getElementById('period').value;
+            const initialCashInput = document.getElementById('initialCash').value;
+            const selectedDate = document.getElementById('selectedDate').value;
+
+            // Validate inputs
+            if (!symbol) {
+                alert('Please select a stock symbol from the dropdown');
+                return;
+            }
+
+            if (!initialCashInput || parseFloat(initialCashInput) <= 0) {
+                alert('Please enter a valid initial cash amount');
+                return;
+            }
+
+            const initialCash = parseFloat(initialCashInput);
+
+            try {
+                const response = await fetch('/api/start-simulator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        symbol: symbol,
+                        interval: interval,
+                        period: period,
+                        initial_cash: initialCash,
+                        selected_date: selectedDate || null
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    updateStatus(true);
+                    startDataUpdates();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error starting simulator: ' + error.message);
+            }
+        }
+
+        // Stop simulator
+        async function stopSimulator() {
+            try {
+                const response = await fetch('/api/stop-simulator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    updateStatus(false);
+                    stopDataUpdates();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error stopping simulator: ' + error.message);
+            }
+        }
+
+        // Update date info display
+        function updateDateInfo() {
+            const selectedDate = document.getElementById('selectedDate').value;
+            const dateInfo = document.getElementById('dateInfo');
+            
+            if (selectedDate) {
+                const date = new Date(selectedDate);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                dateInfo.innerHTML = `<small class="text-primary"><i class="fas fa-history"></i> Historical mode: ${formattedDate}</small>`;
+            } else {
+                dateInfo.innerHTML = `<small class="text-muted"><i class="fas fa-clock"></i> Current mode: Real-time data</small>`;
+            }
+        }
+
+        // Update status display
+        function updateStatus(running) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const configInfo = document.getElementById('configInfo');
+            const weekendMode = document.getElementById('weekendMode');
+
+            if (running) {
+                const symbol = document.getElementById('stockSymbol').value.trim();
+                const interval = document.getElementById('interval').value;
+                const period = document.getElementById('period').value;
+                const initialCash = document.getElementById('initialCash').value;
+                const selectedDate = document.getElementById('selectedDate').value;
+                
+                // Check if it's weekend (Saturday = 6, Sunday = 0)
+                const today = new Date().getDay();
+                const isWeekend = today === 0 || today === 6;
+                
+                indicator.className = 'status-indicator status-running';
+                
+                if (selectedDate) {
+                    statusText.textContent = 'Simulator Status: Running (Historical Mode)';
+                    indicator.style.animation = 'pulse 1s infinite'; // Faster pulse for historical mode
+                } else {
+                    statusText.textContent = 'Simulator Status: Running';
+                    indicator.style.animation = 'pulse 2s infinite'; // Normal pulse for real-time
+                }
+                
+                let configText = `Trading ${symbol} | ${interval} intervals | ${period} period | $${initialCash} initial cash`;
+                if (selectedDate) {
+                    const date = new Date(selectedDate);
+                    const formattedDate = date.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                    });
+                    configText += ` | Date: ${formattedDate}`;
+                }
+                configInfo.textContent = configText;
+                
+                if (isWeekend && !selectedDate) {
+                    weekendMode.style.display = 'block';
+                } else {
+                    weekendMode.style.display = 'none';
+                }
+                
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            } else {
+                indicator.className = 'status-indicator status-stopped';
+                statusText.textContent = 'Simulator Status: Stopped';
+                configInfo.textContent = 'Configure your trading parameters above';
+                weekendMode.style.display = 'none';
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        }
+
+        // Start data updates with enhanced real-time frequency
+        function startDataUpdates() {
+            // Check if historical date is selected
+            const selectedDate = document.getElementById('selectedDate').value;
+            
+            if (selectedDate) {
+                // For historical data, update very frequently for smooth streaming
+                updateInterval = setInterval(async () => {
+                    await updateHistoricalData();
+                }, 200); // Update every 200ms for ultra-smooth historical streaming
+                updateFrequencyDisplay('200ms');
+            } else {
+                // For real-time data, update more frequently for continuous graphs
+                updateInterval = setInterval(async () => {
+                    await updateAllData();
+                }, 500); // Update every 500ms for continuous real-time graphs
+                updateFrequencyDisplay('500ms');
+            }
+            
+            // Add immediate update for instant feedback
+            setTimeout(async () => {
+                await updateAllData();
+            }, 100);
+        }
+        
+        // Update frequency display
+        function updateFrequencyDisplay(frequency) {
+            const frequencyElement = document.getElementById('frequencyValue');
+            if (frequencyElement) {
+                frequencyElement.textContent = frequency;
+            }
+        }
+
+        // Stop data updates
+        function stopDataUpdates() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+            
+            // Hide real-time indicators when stopped
+            const stockStatus = document.getElementById('stockUpdateStatus');
+            const portfolioStatus = document.getElementById('portfolioUpdateStatus');
+            
+            if (stockStatus) {
+                stockStatus.innerHTML = '<span style="color: #dc3545;">Updates Stopped</span>';
+            }
+            if (portfolioStatus) {
+                portfolioStatus.innerHTML = '<span style="color: #dc3545;">Updates Stopped</span>';
+            }
+            
+            // Reset frequency display
+            updateFrequencyDisplay('Stopped');
+        }
+
+        // Update all data with real-time indicators
+        async function updateAllData() {
+            try {
+                const updateTime = new Date().toLocaleTimeString();
+                
+                // Update trades
+                const tradesResponse = await fetch('/api/trades');
+                const trades = await tradesResponse.json();
+                updateTradesTable(trades);
+                updateStats(trades);
+
+                // Update stock data
+                const stockResponse = await fetch('/api/stock-data');
+                if (stockResponse.ok) {
+                    const stockData = await stockResponse.json();
+                    updateStockChart(stockData);
+                    updateRealTimeIndicator('stockUpdateStatus', updateTime);
+                }
+
+                // Update portfolio data
+                const portfolioResponse = await fetch('/api/portfolio-values');
+                if (portfolioResponse.ok) {
+                    const portfolioData = await portfolioResponse.json();
+                    updatePortfolioChart(portfolioData);
+                    updateRealTimeIndicator('portfolioUpdateStatus', updateTime);
+                }
+            } catch (error) {
+                console.error('Error updating data:', error);
+            }
+        }
+        
+        // Update real-time indicator with timestamp
+        function updateRealTimeIndicator(elementId, timestamp) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `
+                    <span class="real-time-indicator"></span>
+                    <span>Live Updates - Last: ${timestamp}</span>
+                `;
+            }
+        }
+
+        // Enhanced update function for historical data
+        async function updateHistoricalData() {
+            try {
+                const updateTime = new Date().toLocaleTimeString();
+                
+                // Update more frequently for historical data
+                const tradesResponse = await fetch('/api/trades');
+                const trades = await tradesResponse.json();
+                updateTradesTable(trades);
+                updateStats(trades);
+
+                const stockResponse = await fetch('/api/stock-data');
+                if (stockResponse.ok) {
+                    const stockData = await stockResponse.json();
+                    updateStockChart(stockData);
+                    updateRealTimeIndicator('stockUpdateStatus', updateTime);
+                }
+
+                const portfolioResponse = await fetch('/api/portfolio-values');
+                if (portfolioResponse.ok) {
+                    const portfolioData = await portfolioResponse.json();
+                    updatePortfolioChart(portfolioData);
+                    updateRealTimeIndicator('portfolioUpdateStatus', updateTime);
+                }
+            } catch (error) {
+                console.error('Error updating historical data:', error);
+            }
+        }
+
+        // Check simulator status on page load
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/simulator-status');
+                const result = await response.json();
+                updateStatus(result.running);
+                
+                if (result.running) {
+                    startDataUpdates();
+                }
+            } catch (error) {
+                console.error('Error checking status:', error);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', startSimulator);
+        document.getElementById('stopBtn').addEventListener('click', stopSimulator);
+        
+        // Strategy configuration
+        document.getElementById('saveStrategyBtn').addEventListener('click', function() {
+            const strategyConfig = {
+                short_window: parseInt(document.getElementById('shortWindow').value),
+                long_window: parseInt(document.getElementById('longWindow').value),
+                profit_threshold: parseFloat(document.getElementById('profitThreshold').value) / 100,
+                stop_loss: parseFloat(document.getElementById('stopLoss').value) / 100,
+                risk_per_trade: parseFloat(document.getElementById('riskPerTrade').value) / 100,
+                rsi_overbought: parseInt(document.getElementById('rsiOverbought').value)
+            };
+            
+            // Store strategy configuration in localStorage
+            localStorage.setItem('tradingStrategyConfig', JSON.stringify(strategyConfig));
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('strategyModal'));
+            modal.hide();
+            
+            // Show success message
+            alert('Strategy configuration saved! Restart the simulator to apply new settings.');
+        });
+
+        // Load saved strategy configuration
+        function loadStrategyConfig() {
+            const savedConfig = localStorage.getItem('tradingStrategyConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                document.getElementById('shortWindow').value = config.short_window || 5;
+                document.getElementById('longWindow').value = config.long_window || 20;
+                document.getElementById('profitThreshold').value = (config.profit_threshold * 100) || 1.5;
+                document.getElementById('stopLoss').value = (config.stop_loss * 100) || 1.0;
+                document.getElementById('riskPerTrade').value = (config.risk_per_trade * 100) || 2.0;
+                document.getElementById('rsiOverbought').value = config.rsi_overbought || 70;
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            checkStatus();
+            updateAllData();
+            updateDateInfo(); // Initialize date info display
+            loadStrategyConfig(); // Load saved strategy configuration
+            
+            // Set max date to today for date picker
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('selectedDate').setAttribute('max', today);
+            
+            // Add dropdown validation
+            document.getElementById('stockSymbol').addEventListener('change', function() {
+                // Validation is handled by the required attribute and dropdown selection
+            });
+            
+            document.getElementById('initialCash').addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                if (value < 1000) {
+                    this.setCustomValidity('Minimum amount is $1,000');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+            
+            // Add date picker event listener
+            document.getElementById('selectedDate').addEventListener('change', function() {
+                const selectedDate = this.value;
+                if (selectedDate) {
+                    const date = new Date(selectedDate);
+                    const today = new Date();
+                    today.setHours(23, 59, 59, 999); // End of today
+                    
+                    if (date > today) {
+                        alert('Please select a date in the past or today. Future dates are not supported.');
+                        this.value = '';
+                        updateDateInfo();
+                        return;
+                    }
+                    
+                    // Check if date is more than 30 days ago for 1m interval
+                    const interval = document.getElementById('interval').value;
+                    if (interval === '1m') {
+                        const thirtyDaysAgo = new Date();
+                        thirtyDaysAgo.setDate(today.getDate() - 30);
+                        
+                        if (date < thirtyDaysAgo) {
+                            alert('Warning: 1-minute data is only available for the last 30 days. The system will automatically switch to daily data for older dates.');
+                        }
+                    }
+                }
+                updateDateInfo();
+            });
+        });
+    </script>
+</body>
+</html> 

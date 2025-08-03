@@ -1,306 +1,237 @@
-# 📈 Real-Time Stock Trading Simulator
+# Real-Time Stock Trading Simulator
 
-A sophisticated Python-based real-time stock trading simulator that demonstrates automated trading system development with live market data integration, advanced strategy implementation, and comprehensive performance analytics.
+A modern, professional web-based real-time stock trading simulator with interactive charts, live data visualization, and advanced trading strategies. Built with Flask, Plotly, and Yahoo Finance API.
 
-## 🎯 Overview
+![Trading Simulator Dashboard](https://img.shields.io/badge/Status-Active-brightgreen)
+![Python Version](https://img.shields.io/badge/Python-3.8+-blue)
+![Flask Version](https://img.shields.io/badge/Flask-2.3+-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-This project simulates real-time stock trading using live market data from Yahoo Finance (`yfinance`). It implements a moving average crossover strategy, manages portfolio positions, stores trade history in SQLite, and generates detailed performance reports with key financial metrics.
+## 🚀 Features
 
-### Key Features
-- 🔄 **Real-Time Data Integration**: Live 1-minute stock data during US market hours
-- 📊 **Advanced Trading Strategy**: Moving average crossover algorithm with configurable parameters
-- 💼 **Portfolio Management**: Cash tracking, position management, and transaction cost handling
-- 🗄️ **Data Persistence**: SQLite database for trade history and portfolio tracking
-- 📈 **Performance Analytics**: Comprehensive reporting with Sharpe ratio, drawdown analysis
-- 📊 **Interactive Visualization**: Real-time charts using Plotly
-- 🛡️ **Robust Error Handling**: Comprehensive error management and data validation
+### Core Trading Features
+- **Real-time Stock Data**: Live stock price monitoring with Yahoo Finance integration
+- **Advanced Trading Strategy**: Moving average crossover strategy with configurable parameters
+- **Portfolio Tracking**: Real-time portfolio value updates and performance metrics
+- **Historical Mode**: Run simulations on historical data for backtesting
+- **Multiple Stocks**: Support for 40+ popular stocks and ETFs
 
-## 🚀 Quick Start
+### User Interface
+- **Interactive Charts**: Beautiful Plotly charts showing price movements and trading signals
+- **Responsive Design**: Modern UI that works seamlessly on desktop and mobile
+- **Real-time Updates**: Live data updates with smooth animations
+- **Dark Mode Support**: Automatic dark mode detection and styling
+- **Professional Dashboard**: Clean, intuitive interface with comprehensive trading information
 
-### Prerequisites
-- **Python 3.8+**
-- **US Market Hours**: For real-time data, run during 9:30 AM–4:00 PM ET
-- **Internet Connection**: Required for live data fetching
-
-### Installation
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-username/Real-Time-Stock-Trading-Simulator.git
-   cd Real-Time-Stock-Trading-Simulator
-   ```
-
-2. **Set Up Virtual Environment** (Recommended)
-   ```bash
-   python -m venv venv
-   
-   # Windows
-   venv\Scripts\activate
-   
-   # macOS/Linux
-   source venv/bin/activate
-   ```
-
-3. **Install Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Verify Installation**
-   ```bash
-   python -c "import main, data_fetcher, strategy, portfolio, database, visualizer, report; print('✅ All modules imported successfully')"
-   ```
+### Technical Features
+- **Modular Architecture**: Well-organized codebase with separation of concerns
+- **API-First Design**: RESTful API endpoints for all trading operations
+- **Error Handling**: Robust error handling and retry mechanisms
+- **Configuration Management**: Environment-based configuration system
+- **Testing Suite**: Comprehensive unit tests for core functionality
 
 ## 📁 Project Structure
 
 ```
 Real-Time-Stock-Trading-Simulator/
-├── 📄 main.py              # Main simulator orchestrator
-├── 📄 data_fetcher.py      # Real-time data fetching (yfinance)
-├── 📄 strategy.py          # Trading strategy implementation
-├── 📄 portfolio.py         # Portfolio and position management
-├── 📄 database.py          # SQLite trade storage
-├── 📄 visualizer.py        # Interactive charts (Plotly)
-├── 📄 report.py            # Performance analytics
-├── 📄 requirements.txt     # Python dependencies
-├── 📄 README.md           # Project documentation
-├── 📄 LICENSE             # MIT License
-├── 🗄️ trades.db           # Trade history database
-├── 📊 portfolio_values.txt # Portfolio value tracking
-└── 📈 performance_report.txt # Generated reports
+├── src/                          # Main source code
+│   ├── core/                     # Core trading functionality
+│   │   ├── __init__.py
+│   │   ├── data_fetcher.py      # Stock data fetching
+│   │   └── strategy.py          # Trading strategy implementation
+│   ├── api/                      # API endpoints
+│   │   ├── __init__.py
+│   │   └── routes.py            # Flask routes and API handlers
+│   ├── utils/                    # Utility functions
+│   │   ├── __init__.py
+│   │   └── config.py            # Configuration management
+│   └── models/                   # Data models
+│       ├── __init__.py
+│       └── trade.py             # Trade and portfolio models
+├── static/                       # Static assets
+│   ├── css/                     # Stylesheets
+│   │   └── main.css             # Main application styles
+│   ├── js/                      # JavaScript files
+│   │   └── app.js               # Main application logic
+│   ├── images/                  # Image assets
+│   └── templates/               # HTML templates
+│       └── index.html           # Main dashboard template
+├── tests/                        # Test suite
+│   ├── __init__.py
+│   ├── test_data_fetcher.py     # Data fetcher tests
+│   └── test_strategy.py         # Strategy tests
+├── docs/                         # Documentation
+├── app.py                       # Main application entry point
+├── requirements.txt             # Python dependencies
+├── setup.py                     # Package setup
+├── Makefile                     # Development tasks
+├── env.example                  # Environment variables example
+└── README.md                    # This file
 ```
 
-## 🎮 Usage
+## 🛠️ Installation
 
-### Running the Simulator
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package installer)
 
-**Basic Usage:**
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/real-time-stock-trading-simulator.git
+   cd real-time-stock-trading-simulator
+   ```
+
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the application**
+   ```bash
+   python app.py
+   ```
+
+5. **Open in browser**
+   Navigate to `http://localhost:5000`
+
+### Development Setup
+
+For development with additional tools:
+
 ```bash
-python main.py --symbol AAPL --interval 1m --period 1h --cash 50000 --iterations 100
+# Install development dependencies
+make install-dev
+
+# Run tests
+make test
+
+# Format code
+make format
+
+# Lint code
+make lint
 ```
 
-**Parameters:**
-- `--symbol`: Stock ticker symbol (e.g., `AAPL`, `MSFT`, `TSLA`, `GOOGL`)
-- `--interval`: Data interval (`1m`, `5m`, `15m`, `1h`)
-- `--period`: Data period (`1h`, `1d`, `5d`, `1mo`)
-- `--cash`: Initial cash balance (default: `$50,000`)
-- `--iterations`: Number of trading iterations (default: `100`)
+## 🎯 Usage
 
-### Example Commands
+### Basic Trading
 
-**High-Frequency Trading (Tesla):**
+1. **Select Stock**: Choose from 40+ available stocks and ETFs
+2. **Configure Parameters**: Set interval, period, and initial cash amount
+3. **Start Simulation**: Click "Start Simulator" to begin real-time trading
+4. **Monitor Results**: Watch live charts and trade updates
+5. **Stop Simulation**: Click "Stop Simulator" when finished
+
+### Historical Mode
+
+1. **Enable Historical Mode**: Check the "Historical Mode" checkbox
+2. **Select Date**: Choose a specific date for backtesting
+3. **Run Simulation**: Start the simulator to see how your strategy would have performed
+
+### Trading Strategy
+
+The simulator uses a **Moving Average Crossover** strategy:
+- **Buy Signal**: When short-term moving average crosses above long-term moving average
+- **Sell Signal**: When short-term moving average crosses below long-term moving average
+- **Configurable Parameters**: Adjust short and long window periods
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Copy `env.example` to `.env` and modify as needed:
+
 ```bash
-python main.py --symbol TSLA --interval 1m --period 1h --cash 100000 --iterations 50
+# Flask Configuration
+FLASK_DEBUG=True
+SECRET_KEY=your-secret-key-here
+HOST=0.0.0.0
+PORT=5000
+
+# Trading Configuration
+DEFAULT_SYMBOL=AAPL
+DEFAULT_INTERVAL=1m
+DEFAULT_PERIOD=1d
+DEFAULT_INITIAL_CASH=50000
+
+# Strategy Configuration
+DEFAULT_SHORT_WINDOW=2
+DEFAULT_LONG_WINDOW=5
 ```
 
-**Conservative Trading (Microsoft):**
+### Available Stocks
+
+The simulator supports 40+ popular stocks and ETFs including:
+- **Technology**: AAPL, MSFT, GOOGL, AMZN, TSLA, META, NVDA
+- **Finance**: JPM, BAC, WFC, GS, MS, C
+- **Healthcare**: JNJ, PFE, UNH
+- **Consumer**: HD, DIS, V, MA, PG, KO, PEP, WMT, COST
+- **And many more...**
+
+## 📊 API Endpoints
+
+### Core Endpoints
+- `GET /` - Main dashboard
+- `GET /api/simulator-status` - Get simulation status
+
+### Trading Endpoints
+- `POST /api/start-simulator` - Start trading simulation
+- `POST /api/stop-simulator` - Stop simulation
+- `POST /api/clear-trades` - Clear all trades
+
+### Data Endpoints
+- `GET /api/stock-data` - Get current stock data and signals
+- `GET /api/trades` - Get trade history
+- `GET /api/portfolio-values` - Get portfolio value history
+
+## 🧪 Testing
+
+Run the test suite:
+
 ```bash
-python main.py --symbol MSFT --interval 5m --period 1d --cash 75000 --iterations 200
+# Run all tests
+make test
+
+# Run tests with coverage
+make test-coverage
+
+# Run specific test file
+python -m pytest tests/test_data_fetcher.py -v
 ```
 
-**Quick Test Run:**
+## 🚀 Deployment
+
+### Local Development
 ```bash
-python main.py --symbol AAPL --interval 1m --period 1h --cash 25000 --iterations 25
+make run-dev
 ```
 
-### Generating Performance Reports
-
-After running the simulator:
+### Production
 ```bash
-python report.py
+# Set production environment
+export FLASK_DEBUG=False
+export SECRET_KEY=your-production-secret-key
+
+# Run application
+python app.py
 ```
 
-This generates `performance_report.txt` with detailed analytics.
-
-## 📊 Sample Output
-
-### Simulator Console Output
-```
-Attempt 1: Fetched 60 rows for AAPL at 2025-01-15 19:30:00
-Iteration 0: Data received with 60 rows
-Latest signal: 1, Latest price: 197.85
-Executed buy for AAPL at 197.85
-Portfolio value: $49802.15, Holdings: {'AAPL': 1}
-
-Iteration 1: Data received with 61 rows
-Latest signal: 0, Latest price: 198.00
-No trade signal (signal=0)
-Portfolio value: $49802.30, Holdings: {'AAPL': 1}
-```
-
-### Performance Report
-```
-Performance Report for AAPL
-========================================
-Initial Cash: $50000.00
-Portfolio values loaded: 50 entries
-Found 4 trades
-
-📈 Performance Metrics:
-Total Return: 0.85%
-Sharpe Ratio: 0.62
-Max Drawdown: 1.20%
-Win Rate: 50.00%
-
-📊 Trade Summary:
-time                 symbol type  price  quantity
-2025-01-15T19:30:00  AAPL  buy   197.85  1
-2025-01-15T19:35:00  AAPL  sell  198.10  1
-2025-01-15T19:40:00  AAPL  buy   197.50  1
-2025-01-15T19:45:00  AAPL  sell  197.55  1
-```
-
-## 🔧 Trading Strategy
-
-### Moving Average Crossover
-The simulator implements a classic moving average crossover strategy:
-
-- **Short MA**: 2-period moving average (sensitive to recent price changes)
-- **Long MA**: 5-period moving average (trend indicator)
-- **Buy Signal**: When short MA crosses above long MA
-- **Sell Signal**: When short MA crosses below long MA
-- **Hold**: When no crossover occurs
-
-### Strategy Parameters
-```python
-# Configurable in main.py
-strategy = TradingStrategy(short_window=2, long_window=5)
-```
-
-### Transaction Costs
-- **Commission**: 0.1% per trade
-- **Slippage**: Not currently modeled
-- **Minimum Trade Size**: 1 share
-
-## 🛠️ Technical Architecture
-
-### Data Flow
-1. **Data Fetching**: `yfinance` API → Real-time OHLCV data
-2. **Signal Generation**: Moving average calculations → Buy/Sell signals
-3. **Trade Execution**: Portfolio management → Position updates
-4. **Data Storage**: SQLite database → Trade history
-5. **Analytics**: Performance calculations → Reports & charts
-
-### Key Components
-
-#### DataFetcher (`data_fetcher.py`)
-- Real-time data retrieval from Yahoo Finance
-- Retry logic with fallback mechanisms
-- Data validation and quality checks
-
-#### TradingStrategy (`strategy.py`)
-- Moving average crossover algorithm
-- Signal generation (1 = buy, -1 = sell, 0 = hold)
-- Configurable window parameters
-
-#### Portfolio (`portfolio.py`)
-- Cash and position tracking
-- Trade execution logic
-- Portfolio value calculations
-
-#### TradeDatabase (`database.py`)
-- SQLite-based trade storage
-- Transaction history management
-- Data persistence
-
-## 📈 Performance Metrics
-
-The system calculates comprehensive performance metrics:
-
-- **Total Return**: Percentage gain/loss from initial investment
-- **Sharpe Ratio**: Risk-adjusted return measure
-- **Maximum Drawdown**: Largest peak-to-trough decline
-- **Win Rate**: Percentage of profitable trades
-- **Average Trade Price**: Mean execution price
-- **Trade Frequency**: Number of trades per period
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**❌ No Data Received**
+### Docker Deployment
 ```bash
-# Check market hours (US: 9:30 AM - 4:00 PM ET)
-# Try different intervals
-python main.py --symbol AAPL --interval 5m --period 2h
+# Build Docker image
+make docker-build
+
+# Run Docker container
+make docker-run
 ```
-
-**❌ No Trading Signals**
-```bash
-# Reduce strategy sensitivity
-# Edit main.py: short_window=1, long_window=3
-# Try volatile stocks: TSLA, NVDA
-```
-
-**❌ Import Errors**
-```bash
-# Activate virtual environment
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # macOS/Linux
-
-# Reinstall dependencies
-pip install -r requirements.txt --force-reinstall
-```
-
-**❌ Database Issues**
-```bash
-# Reset database
-rm trades.db
-python main.py
-```
-
-### Debug Mode
-Enable verbose logging by modifying `main.py`:
-```python
-# Add debug prints
-print(f"Debug: Data shape {data.shape}")
-print(f"Debug: Signals {signals.tail()}")
-```
-
-## 🚀 Advanced Usage
-
-### Custom Strategies
-Extend `strategy.py` to implement alternative strategies:
-
-```python
-class RSITradingStrategy(TradingStrategy):
-    def generate_signals(self, data):
-        # Implement RSI strategy
-        pass
-
-class MACDTradingStrategy(TradingStrategy):
-    def generate_signals(self, data):
-        # Implement MACD strategy
-        pass
-```
-
-### Multiple Symbols
-Modify `main.py` to trade multiple stocks simultaneously:
-
-```python
-symbols = ["AAPL", "MSFT", "GOOGL"]
-for symbol in symbols:
-    # Run simulator for each symbol
-    pass
-```
-
-### Backtesting
-Use historical data for strategy validation:
-
-```python
-# Modify data_fetcher.py for historical data
-data = stock.history(start="2024-01-01", end="2024-12-31")
-```
-
-## 📚 Dependencies
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `yfinance` | 0.2.65 | Real-time stock data |
-| `pandas` | 2.3.1 | Data manipulation |
-| `numpy` | 2.3.2 | Numerical computations |
-| `plotly` | 6.2.0 | Interactive charts |
-| `requests` | 2.32.4 | HTTP requests |
 
 ## 🤝 Contributing
 
@@ -310,48 +241,37 @@ data = stock.history(start="2024-01-01", end="2024-12-31")
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Development Setup
-```bash
-# Install development dependencies
-pip install -r requirements.txt
-pip install pytest black flake8
+### Development Guidelines
+- Follow PEP 8 style guidelines
+- Write tests for new features
+- Update documentation as needed
+- Use meaningful commit messages
 
-# Run tests
-pytest
-
-# Format code
-black .
-
-# Lint code
-flake8 .
-```
-
-## 📄 License
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## ⚠️ Disclaimer
+## 🙏 Acknowledgments
 
-**This is a simulation for educational purposes only.**
-
-- Not financial advice
-- Past performance doesn't guarantee future results
-- Real trading involves significant risks
-- Use at your own risk
-- Consider paper trading before live trading
-
-## 🔗 Related Projects
-
-- [yfinance](https://github.com/ranaroussi/yfinance) - Yahoo Finance market data
-- [pandas](https://pandas.pydata.org/) - Data analysis library
-- [plotly](https://plotly.com/python/) - Interactive plotting
+- **Yahoo Finance**: For providing real-time stock data
+- **Plotly**: For interactive charting capabilities
+- **Flask**: For the web framework
+- **Bootstrap**: For responsive UI components
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/your-username/Real-Time-Stock-Trading-Simulator/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/Real-Time-Stock-Trading-Simulator/discussions)
-- **Email**: your-email@example.com
+- **Issues**: [GitHub Issues](https://github.com/yourusername/real-time-stock-trading-simulator/issues)
+- **Documentation**: [Project Wiki](https://github.com/yourusername/real-time-stock-trading-simulator/wiki)
+- **Email**: your.email@example.com
+
+## 🔄 Changelog
+
+### Version 1.0.0
+- Initial release with real-time trading simulation
+- Interactive charts and portfolio tracking
+- Historical mode for backtesting
+- Modular architecture and comprehensive testing
 
 ---
 
-⭐ **Star this repository if you find it helpful!**
+**Disclaimer**: This is a simulation tool for educational purposes only. It does not provide financial advice or guarantee investment returns. Always do your own research before making investment decisions.
