@@ -76,6 +76,27 @@ Real-Time-Stock-Trading-Simulator/
 
 ### Quick Start
 
+#### Windows (Recommended)
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/real-time-stock-trading-simulator.git
+   cd real-time-stock-trading-simulator
+   ```
+
+2. **Run installation script**
+   ```bash
+   install.bat
+   ```
+
+3. **Run the application**
+   ```bash
+   run.bat
+   ```
+
+4. **Open in browser**
+   Navigate to `http://localhost:5000`
+
+#### Manual Installation (All Platforms)
 1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/real-time-stock-trading-simulator.git

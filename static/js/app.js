@@ -1,5 +1,6 @@
 /**
- * Real-Time Stock Trading Simulator - Main JavaScript
+ * Real-Time Stock Trading Simulator - Enhanced JavaScript
+ * Features: Modern charts, real-time animations, professional styling
  */
 
 class TradingSimulator {
@@ -8,8 +9,18 @@ class TradingSimulator {
         this.updateInterval = null;
         this.charts = {};
         this.currentData = {};
-        this.initialCash = 5000; // Default initial cash
-        this.baselineValues = []; // Store baseline portfolio values
+        this.initialCash = 5000;
+        this.baselineValues = [];
+        this.chartColors = {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            success: '#27ae60',
+            danger: '#e74c3c',
+            warning: '#f39c12',
+            info: '#17a2b8',
+            light: '#ecf0f1',
+            dark: '#2c3e50'
+        };
         
         this.initializeEventListeners();
         this.initializeCharts();
@@ -18,13 +29,11 @@ class TradingSimulator {
     }
     
     prePopulateForm() {
-        // Pre-populate symbol with AAPL
         const symbolSelect = document.getElementById('stockSymbol');
         if (symbolSelect) {
             symbolSelect.value = 'AAPL';
         }
         
-        // Pre-populate initial cash with 5000
         const initialCashInput = document.getElementById('initialCash');
         if (initialCashInput) {
             initialCashInput.value = this.initialCash;
@@ -32,17 +41,14 @@ class TradingSimulator {
     }
     
     initializeEventListeners() {
-        // Start simulator button
         document.getElementById('startBtn').addEventListener('click', () => {
             this.startSimulator();
         });
         
-        // Stop simulator button
         document.getElementById('stopBtn').addEventListener('click', () => {
             this.stopSimulator();
         });
         
-        // Clear trades button - check if it exists
         const clearTradesBtn = document.getElementById('clearTrades');
         if (clearTradesBtn) {
             clearTradesBtn.addEventListener('click', () => {
@@ -50,7 +56,6 @@ class TradingSimulator {
             });
         }
         
-        // Historical mode toggle - check if it exists
         const historicalModeToggle = document.getElementById('historicalMode');
         if (historicalModeToggle) {
             historicalModeToggle.addEventListener('change', (e) => {
@@ -60,11 +65,14 @@ class TradingSimulator {
     }
     
     initializeCharts() {
-        // Initialize stock price chart
+        // Initialize with empty states and helpful messages
         this.charts.stockChart = this.createStockChart();
-        
-        // Initialize portfolio chart
         this.charts.portfolioChart = this.createPortfolioChart();
+        
+        // Add chart responsiveness
+        window.addEventListener('resize', () => {
+            this.resizeCharts();
+        });
     }
     
     createStockChart() {
@@ -74,51 +82,79 @@ class TradingSimulator {
             type: 'scatter',
             mode: 'lines',
             name: 'Stock Price',
-            line: { color: '#3498db', width: 2 }
-        };
-        
-        const trace2 = {
-            x: [],
-            y: [],
-            type: 'scatter',
-            mode: 'lines',
-            name: 'Short MA',
-            line: { color: '#e74c3c', width: 1, dash: 'dash' }
-        };
-        
-        const trace3 = {
-            x: [],
-            y: [],
-            type: 'scatter',
-            mode: 'lines',
-            name: 'Long MA',
-            line: { color: '#f39c12', width: 1, dash: 'dash' }
+            line: { 
+                color: this.chartColors.primary, 
+                width: 3,
+                shape: 'spline'
+            },
+            fill: 'tonexty',
+            fillcolor: 'rgba(102, 126, 234, 0.1)'
         };
         
         const layout = {
-            title: 'Stock Price & Moving Averages',
+            title: {
+                text: 'Stock Price & Trading Signals',
+                font: { size: 18, color: this.chartColors.dark },
+                x: 0.5
+            },
             xaxis: { 
                 title: 'Time',
                 showgrid: true,
-                gridcolor: 'rgba(0,0,0,0.1)'
+                gridcolor: 'rgba(0,0,0,0.1)',
+                zeroline: false,
+                rangeslider: { visible: false }
             },
             yaxis: { 
                 title: 'Price ($)',
                 showgrid: true,
                 gridcolor: 'rgba(0,0,0,0.1)',
-                autorange: true // Enable auto-scaling
+                zeroline: false,
+                autorange: true
             },
-            height: 400,
-            margin: { l: 50, r: 50, t: 50, b: 50 },
-            plot_bgcolor: 'rgba(255,255,255,0.8)',
-            paper_bgcolor: 'rgba(255,255,255,0.8)',
-            hovermode: 'x unified'
+            height: 450,
+            margin: { l: 60, r: 60, t: 80, b: 60 },
+            plot_bgcolor: 'rgba(255,255,255,0.9)',
+            paper_bgcolor: 'rgba(255,255,255,0.9)',
+            hovermode: 'x unified',
+            showlegend: true,
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                bgcolor: 'rgba(255,255,255,0.8)',
+                bordercolor: 'rgba(0,0,0,0.1)',
+                borderwidth: 1
+            },
+            font: {
+                family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+            },
+            annotations: [{
+                text: 'Click "Start Simulator" to begin trading and see live data',
+                xref: 'paper',
+                yref: 'paper',
+                x: 0.5,
+                y: 0.5,
+                xanchor: 'center',
+                yanchor: 'middle',
+                showarrow: false,
+                font: {
+                    size: 16,
+                    color: '#7f8c8d'
+                },
+                bgcolor: 'rgba(255,255,255,0.8)',
+                bordercolor: 'rgba(0,0,0,0.1)',
+                borderwidth: 1,
+                pad: 10
+            }]
         };
         
-        return Plotly.newPlot('stockChart', [trace1, trace2, trace3], layout, {
+        const config = {
             responsive: true,
-            displayModeBar: false
-        });
+            displayModeBar: true,
+            modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+            displaylogo: false
+        };
+        
+        return Plotly.newPlot('stockChart', [trace1], layout, config);
     }
     
     createPortfolioChart() {
@@ -128,47 +164,79 @@ class TradingSimulator {
             type: 'scatter',
             mode: 'lines',
             name: 'Portfolio Value',
-            line: { color: '#27ae60', width: 3 },
+            line: { 
+                color: this.chartColors.success, 
+                width: 4,
+                shape: 'spline'
+            },
             fill: 'tonexty',
             fillcolor: 'rgba(39, 174, 96, 0.1)'
         };
         
-        // Add baseline trace
-        const baselineTrace = {
-            x: [],
-            y: [],
-            type: 'scatter',
-            mode: 'lines',
-            name: 'Baseline (Buy & Hold)',
-            line: { color: '#95a5a6', width: 2, dash: 'dot' },
-            opacity: 0.7
-        };
-        
         const layout = {
-            title: 'Portfolio Value Over Time',
+            title: {
+                text: 'Portfolio Performance vs Buy & Hold',
+                font: { size: 16, color: this.chartColors.dark },
+                x: 0.5
+            },
             xaxis: { 
                 title: 'Time',
                 showgrid: true,
-                gridcolor: 'rgba(0,0,0,0.1)'
+                gridcolor: 'rgba(0,0,0,0.1)',
+                zeroline: false,
+                rangeslider: { visible: false }
             },
             yaxis: { 
                 title: 'Value ($)',
                 showgrid: true,
                 gridcolor: 'rgba(0,0,0,0.1)',
-                autorange: true // Enable auto-scaling
+                zeroline: false,
+                autorange: true
             },
-            height: 300,
-            margin: { l: 50, r: 50, t: 50, b: 50 },
-            plot_bgcolor: 'rgba(255,255,255,0.8)',
-            paper_bgcolor: 'rgba(255,255,255,0.8)',
+            height: 350,
+            margin: { l: 60, r: 60, t: 80, b: 60 },
+            plot_bgcolor: 'rgba(255,255,255,0.9)',
+            paper_bgcolor: 'rgba(255,255,255,0.9)',
             hovermode: 'x unified',
-            showlegend: true
+            showlegend: true,
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                bgcolor: 'rgba(255,255,255,0.8)',
+                bordercolor: 'rgba(0,0,0,0.1)',
+                borderwidth: 1
+            },
+            font: {
+                family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+            },
+            annotations: [{
+                text: 'Portfolio performance will appear here once trading begins',
+                xref: 'paper',
+                yref: 'paper',
+                x: 0.5,
+                y: 0.5,
+                xanchor: 'center',
+                yanchor: 'middle',
+                showarrow: false,
+                font: {
+                    size: 14,
+                    color: '#7f8c8d'
+                },
+                bgcolor: 'rgba(255,255,255,0.8)',
+                bordercolor: 'rgba(0,0,0,0.1)',
+                borderwidth: 1,
+                pad: 10
+            }]
         };
         
-        return Plotly.newPlot('portfolioChart', [trace, baselineTrace], layout, {
+        const config = {
             responsive: true,
-            displayModeBar: false
-        });
+            displayModeBar: true,
+            modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+            displaylogo: false
+        };
+        
+        return Plotly.newPlot('portfolioChart', [trace], layout, config);
     }
     
     async startSimulator() {
@@ -176,7 +244,7 @@ class TradingSimulator {
         const interval = document.getElementById('interval').value;
         const period = document.getElementById('period').value;
         const initialCash = parseFloat(document.getElementById('initialCash').value);
-        const historicalMode = document.getElementById('historicalMode').checked;
+        const historicalMode = document.getElementById('historicalMode')?.checked || false;
         const selectedDate = historicalMode ? document.getElementById('selectedDate').value : null;
         
         if (!symbol || initialCash <= 0) {
@@ -209,10 +277,15 @@ class TradingSimulator {
             const data = await response.json();
             
             if (response.ok) {
-                this.showAlert(data.message, 'success');
+                this.showAlert(`Simulator started successfully! Trading ${symbol} with $${initialCash.toLocaleString()} initial cash.`, 'success');
                 this.isRunning = true;
+                this.initialCash = initialCash;
                 this.updateUI();
                 this.startDataUpdates();
+                
+                // Update status indicators to show simulator is starting
+                this.updateRealTimeIndicator('stockUpdateStatus', 'Simulator starting...');
+                this.updateRealTimeIndicator('portfolioUpdateStatus', 'Simulator starting...');
             } else {
                 this.showAlert(data.error, 'danger');
             }
@@ -261,7 +334,7 @@ class TradingSimulator {
             if (response.ok) {
                 this.showAlert(data.message, 'success');
                 this.updateTradesTable([]);
-                this.updatePortfolioChart([]);
+                this.resetCharts();
             } else {
                 this.showAlert(data.error, 'danger');
             }
@@ -271,11 +344,26 @@ class TradingSimulator {
     }
     
     startDataUpdates() {
+        // More frequent updates for smoother animations and better responsiveness
         this.updateInterval = setInterval(() => {
             this.updateStockData();
             this.updateTrades();
             this.updatePortfolioValues();
-        }, 5000); // Update every 5 seconds
+        }, 2000); // Update every 2 seconds for better responsiveness
+        
+        // Immediate first update
+        setTimeout(() => {
+            this.updateStockData();
+            this.updateTrades();
+            this.updatePortfolioValues();
+        }, 100);
+        
+        // Additional update after 1 second to ensure data is loaded
+        setTimeout(() => {
+            this.updateStockData();
+            this.updateTrades();
+            this.updatePortfolioValues();
+        }, 1000);
     }
     
     stopDataUpdates() {
@@ -290,13 +378,28 @@ class TradingSimulator {
             const response = await fetch('/api/stock-data');
             const data = await response.json();
             
-            if (response.ok && data.current_price) {
+            if (response.ok && data.timestamps && data.prices && data.timestamps.length > 0) {
                 this.currentData = data;
                 this.updateStockChart(data);
                 this.updateCurrentPrice(data);
+                this.updateRealTimeIndicator('stockUpdateStatus');
+            } else if (response.status === 404) {
+                // If no data available, show a message but don't error
+                console.log('No stock data available yet. Waiting for simulator to start...');
+                this.updateRealTimeIndicator('stockUpdateStatus', 'Waiting for data...');
+                // Update chart with empty state
+                this.updateStockChart({ timestamps: [], prices: [] });
+            } else {
+                console.error('Failed to update stock data:', data.error || 'Unknown error');
+                this.updateRealTimeIndicator('stockUpdateStatus', 'Error loading data');
+                // Update chart with empty state
+                this.updateStockChart({ timestamps: [], prices: [] });
             }
         } catch (error) {
             console.error('Failed to update stock data:', error);
+            this.updateRealTimeIndicator('stockUpdateStatus', 'Connection error');
+            // Update chart with empty state
+            this.updateStockChart({ timestamps: [], prices: [] });
         }
     }
     
@@ -306,7 +409,8 @@ class TradingSimulator {
             const data = await response.json();
             
             if (response.ok) {
-                this.updateTradesTable(data.trades || []);
+                this.updateTradesTable(data);
+                this.updateStats(data);
             }
         } catch (error) {
             console.error('Failed to update trades:', error);
@@ -319,16 +423,103 @@ class TradingSimulator {
             const data = await response.json();
             
             if (response.ok) {
-                this.updatePortfolioChart(data.portfolio_values || []);
+                this.updatePortfolioChart(data);
                 this.updatePortfolioStats(data.current_value || 0);
+                this.updateRealTimeIndicator('portfolioUpdateStatus');
+            } else {
+                console.error('Failed to update portfolio values:', data.error || 'Unknown error');
+                this.updateRealTimeIndicator('portfolioUpdateStatus', 'Error loading data');
+                // Update chart with empty state
+                this.updatePortfolioChart({ timestamps: [], values: [] });
             }
         } catch (error) {
             console.error('Failed to update portfolio values:', error);
+            this.updateRealTimeIndicator('portfolioUpdateStatus', 'Connection error');
+            // Update chart with empty state
+            this.updatePortfolioChart({ timestamps: [], values: [] });
         }
     }
     
     updateStockChart(data) {
-        if (!data || !data.timestamps || !data.prices) return;
+        if (!data || !data.timestamps || !data.prices || data.timestamps.length === 0) {
+            // Show empty state with helpful message
+            const emptyTrace = {
+                x: [],
+                y: [],
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Stock Price',
+                line: { 
+                    color: this.chartColors.primary, 
+                    width: 3,
+                    shape: 'spline'
+                }
+            };
+            
+            const layout = {
+                title: {
+                    text: 'Stock Price & Trading Signals',
+                    font: { size: 18, color: this.chartColors.dark },
+                    x: 0.5
+                },
+                xaxis: { 
+                    title: 'Time',
+                    showgrid: true,
+                    gridcolor: 'rgba(0,0,0,0.1)',
+                    zeroline: false,
+                    rangeslider: { visible: false }
+                },
+                yaxis: { 
+                    title: 'Price ($)',
+                    showgrid: true,
+                    gridcolor: 'rgba(0,0,0,0.1)',
+                    zeroline: false,
+                    autorange: true
+                },
+                height: 450,
+                margin: { l: 60, r: 60, t: 80, b: 60 },
+                plot_bgcolor: 'rgba(255,255,255,0.9)',
+                paper_bgcolor: 'rgba(255,255,255,0.9)',
+                hovermode: 'x unified',
+                showlegend: true,
+                legend: {
+                    x: 0.02,
+                    y: 0.98,
+                    bgcolor: 'rgba(255,255,255,0.8)',
+                    bordercolor: 'rgba(0,0,0,0.1)',
+                    borderwidth: 1
+                },
+                font: {
+                    family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                },
+                annotations: [{
+                    text: 'Click "Start Simulator" to begin trading and see live data',
+                    xref: 'paper',
+                    yref: 'paper',
+                    x: 0.5,
+                    y: 0.5,
+                    xanchor: 'center',
+                    yanchor: 'middle',
+                    showarrow: false,
+                    font: {
+                        size: 16,
+                        color: '#7f8c8d'
+                    },
+                    bgcolor: 'rgba(255,255,255,0.8)',
+                    bordercolor: 'rgba(0,0,0,0.1)',
+                    borderwidth: 1,
+                    pad: 10
+                }]
+            };
+            
+            Plotly.react('stockChart', [emptyTrace], layout, {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                displaylogo: false
+            });
+            return;
+        }
         
         const traces = [
             {
@@ -337,19 +528,29 @@ class TradingSimulator {
                 type: 'scatter',
                 mode: 'lines',
                 name: 'Stock Price',
-                line: { color: '#3498db', width: 2 }
+                line: { 
+                    color: this.chartColors.primary, 
+                    width: 3,
+                    shape: 'spline'
+                },
+                fill: 'tonexty',
+                fillcolor: 'rgba(102, 126, 234, 0.1)'
             }
         ];
         
-        // Add moving averages if available
+        // Add moving averages with enhanced styling
         if (data.short_ma && data.short_ma.length > 0) {
             traces.push({
                 x: data.timestamps,
                 y: data.short_ma,
                 type: 'scatter',
                 mode: 'lines',
-                name: 'Short MA',
-                line: { color: '#e74c3c', width: 1, dash: 'dash' }
+                name: 'Short MA (5)',
+                line: { 
+                    color: this.chartColors.danger, 
+                    width: 2, 
+                    dash: 'dot' 
+                }
             });
         }
         
@@ -359,73 +560,305 @@ class TradingSimulator {
                 y: data.long_ma,
                 type: 'scatter',
                 mode: 'lines',
-                name: 'Long MA',
-                line: { color: '#f39c12', width: 1, dash: 'dash' }
+                name: 'Long MA (20)',
+                line: { 
+                    color: this.chartColors.warning, 
+                    width: 2, 
+                    dash: 'dash' 
+                }
             });
         }
         
-        // Update the chart with new data
-        Plotly.react('stockChart', traces, {
-            title: 'Stock Price & Moving Averages',
+        // Add buy/sell signals with enhanced markers
+        if (data.signals) {
+            const buySignals = [];
+            const sellSignals = [];
+            const buyPrices = [];
+            const sellPrices = [];
+            
+            data.signals.forEach((signal, index) => {
+                if (signal === 1) {
+                    buySignals.push(data.timestamps[index]);
+                    buyPrices.push(data.prices[index]);
+                } else if (signal === -1) {
+                    sellSignals.push(data.timestamps[index]);
+                    sellPrices.push(data.prices[index]);
+                }
+            });
+            
+            if (buySignals.length > 0) {
+                traces.push({
+                    x: buySignals,
+                    y: buyPrices,
+                    type: 'scatter',
+                    mode: 'markers',
+                    name: 'Buy Signal',
+                    marker: { 
+                        symbol: 'triangle-up', 
+                        size: 15, 
+                        color: this.chartColors.success,
+                        line: { width: 2, color: '#ffffff' }
+                    }
+                });
+            }
+            
+            if (sellSignals.length > 0) {
+                traces.push({
+                    x: sellSignals,
+                    y: sellPrices,
+                    type: 'scatter',
+                    mode: 'markers',
+                    name: 'Sell Signal',
+                    marker: { 
+                        symbol: 'triangle-down', 
+                        size: 15, 
+                        color: this.chartColors.danger,
+                        line: { width: 2, color: '#ffffff' }
+                    }
+                });
+            }
+        }
+        
+        const symbol = document.getElementById('stockSymbol').value;
+        const layout = {
+            title: {
+                text: `${symbol} Real-Time Price & Trading Signals`,
+                font: { size: 18, color: this.chartColors.dark },
+                x: 0.5
+            },
             xaxis: { 
                 title: 'Time',
                 showgrid: true,
-                gridcolor: 'rgba(0,0,0,0.1)'
+                gridcolor: 'rgba(0,0,0,0.1)',
+                zeroline: false,
+                rangeslider: { visible: false }
             },
             yaxis: { 
                 title: 'Price ($)',
                 showgrid: true,
                 gridcolor: 'rgba(0,0,0,0.1)',
-                autorange: true // Enable auto-scaling
+                zeroline: false,
+                autorange: true
             },
-            height: 400,
-            margin: { l: 50, r: 50, t: 50, b: 50 },
-            plot_bgcolor: 'rgba(255,255,255,0.8)',
-            paper_bgcolor: 'rgba(255,255,255,0.8)',
-            hovermode: 'x unified'
-        }, {
+            height: 450,
+            margin: { l: 60, r: 60, t: 80, b: 60 },
+            plot_bgcolor: 'rgba(255,255,255,0.9)',
+            paper_bgcolor: 'rgba(255,255,255,0.9)',
+            hovermode: 'x unified',
+            showlegend: true,
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                bgcolor: 'rgba(255,255,255,0.8)',
+                bordercolor: 'rgba(0,0,0,0.1)',
+                borderwidth: 1
+            },
+            font: {
+                family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+            },
+            transition: {
+                duration: 300,
+                easing: 'cubic-in-out'
+            }
+        };
+        
+        Plotly.react('stockChart', traces, layout, {
             responsive: true,
-            displayModeBar: false
+            displayModeBar: true,
+            modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+            displaylogo: false
         });
     }
     
     updatePortfolioChart(portfolioData) {
-        if (portfolioData.length === 0) return;
+        if (!portfolioData || !portfolioData.timestamps || !portfolioData.values || portfolioData.timestamps.length === 0) {
+            // Show empty state with helpful message
+            const emptyTrace = {
+                x: [],
+                y: [],
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Portfolio Value',
+                line: { 
+                    color: this.chartColors.success, 
+                    width: 4,
+                    shape: 'spline'
+                }
+            };
+            
+            const layout = {
+                title: {
+                    text: 'Portfolio Performance vs Buy & Hold',
+                    font: { size: 16, color: this.chartColors.dark },
+                    x: 0.5
+                },
+                xaxis: { 
+                    title: 'Time',
+                    showgrid: true,
+                    gridcolor: 'rgba(0,0,0,0.1)',
+                    zeroline: false,
+                    rangeslider: { visible: false }
+                },
+                yaxis: { 
+                    title: 'Value ($)',
+                    showgrid: true,
+                    gridcolor: 'rgba(0,0,0,0.1)',
+                    zeroline: false,
+                    autorange: true
+                },
+                height: 350,
+                margin: { l: 60, r: 60, t: 80, b: 60 },
+                plot_bgcolor: 'rgba(255,255,255,0.9)',
+                paper_bgcolor: 'rgba(255,255,255,0.9)',
+                hovermode: 'x unified',
+                showlegend: true,
+                legend: {
+                    x: 0.02,
+                    y: 0.98,
+                    bgcolor: 'rgba(255,255,255,0.8)',
+                    bordercolor: 'rgba(0,0,0,0.1)',
+                    borderwidth: 1
+                },
+                font: {
+                    family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                },
+                annotations: [{
+                    text: 'Portfolio performance will appear here once trading begins',
+                    xref: 'paper',
+                    yref: 'paper',
+                    x: 0.5,
+                    y: 0.5,
+                    xanchor: 'center',
+                    yanchor: 'middle',
+                    showarrow: false,
+                    font: {
+                        size: 14,
+                        color: '#7f8c8d'
+                    },
+                    bgcolor: 'rgba(255,255,255,0.8)',
+                    bordercolor: 'rgba(0,0,0,0.1)',
+                    borderwidth: 1,
+                    pad: 10
+                }]
+            };
+            
+            Plotly.react('portfolioChart', [emptyTrace], layout, {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                displaylogo: false
+            });
+            return;
+        }
         
-        const x = portfolioData.map((item, index) => index);
-        const y = portfolioData.map(item => item.value);
+        const trace = {
+            x: portfolioData.timestamps,
+            y: portfolioData.values,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Portfolio Value',
+            line: { 
+                color: this.chartColors.success, 
+                width: 4,
+                shape: 'spline'
+            },
+            fill: 'tonexty',
+            fillcolor: 'rgba(39, 174, 96, 0.1)'
+        };
         
-        // Calculate baseline (buy & hold strategy)
-        const baselineY = this.calculateBaselineValues(portfolioData);
+        // Calculate baseline values
+        const baselineValues = this.calculateBaselineValues(portfolioData);
+        const baselineTrace = {
+            x: portfolioData.timestamps,
+            y: baselineValues,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Baseline (Buy & Hold)',
+            line: { 
+                color: this.chartColors.dark, 
+                width: 2, 
+                dash: 'dot',
+                opacity: 0.7
+            }
+        };
         
-        // Update both portfolio and baseline traces
-        Plotly.update('portfolioChart', {
-            x: [x, x],
-            y: [y, baselineY]
-        });
+        const symbol = document.getElementById('stockSymbol').value;
+        const layout = {
+            title: {
+                text: `${symbol} Portfolio Performance`,
+                font: { size: 16, color: this.chartColors.dark },
+                x: 0.5
+            },
+            xaxis: { 
+                title: 'Time',
+                showgrid: true,
+                gridcolor: 'rgba(0,0,0,0.1)',
+                zeroline: false,
+                rangeslider: { visible: false }
+            },
+            yaxis: { 
+                title: 'Value ($)',
+                showgrid: true,
+                gridcolor: 'rgba(0,0,0,0.1)',
+                zeroline: false,
+                autorange: true
+            },
+            height: 350,
+            margin: { l: 60, r: 60, t: 80, b: 60 },
+            plot_bgcolor: 'rgba(255,255,255,0.9)',
+            paper_bgcolor: 'rgba(255,255,255,0.9)',
+            hovermode: 'x unified',
+            showlegend: true,
+            legend: {
+                x: 0.02,
+                y: 0.98,
+                bgcolor: 'rgba(255,255,255,0.8)',
+                bordercolor: 'rgba(0,0,0,0.1)',
+                borderwidth: 1
+            },
+            font: {
+                family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+            },
+            transition: {
+                duration: 300,
+                easing: 'cubic-in-out'
+            }
+        };
         
-        // Ensure proper scaling by setting autorange
-        Plotly.relayout('portfolioChart', {
-            'yaxis.autorange': true
+        Plotly.react('portfolioChart', [trace, baselineTrace], layout, {
+            responsive: true,
+            displayModeBar: true,
+            modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+            displaylogo: false
         });
     }
     
     calculateBaselineValues(portfolioData) {
-        if (portfolioData.length === 0) return [];
+        if (!portfolioData || !portfolioData.values || portfolioData.values.length === 0) return [];
         
-        const initialCash = this.initialCash;
+        const initialCash = portfolioData.initial_cash || this.initialCash;
         const baselineValues = [];
         
-        // Calculate what the portfolio would be worth if we bought and held
-        // We'll use the first price as our entry point
-        const firstPrice = portfolioData[0].price || portfolioData[0].value / initialCash;
-        
-        portfolioData.forEach((item, index) => {
-            const currentPrice = item.price || (item.value / initialCash);
+        if (portfolioData.prices && portfolioData.prices.length > 0) {
+            const firstPrice = portfolioData.prices[0];
             const sharesOwned = initialCash / firstPrice;
-            const baselineValue = sharesOwned * currentPrice;
-            baselineValues.push(baselineValue);
-        });
+            
+            portfolioData.prices.forEach(price => {
+                const baselineValue = sharesOwned * price;
+                baselineValues.push(baselineValue);
+            });
+        } else {
+            // Fallback calculation
+            const firstValue = portfolioData.values[0];
+            const firstPrice = firstValue / initialCash;
+            
+            portfolioData.values.forEach(value => {
+                const currentPrice = value / initialCash;
+                const sharesOwned = initialCash / firstPrice;
+                const baselineValue = sharesOwned * currentPrice;
+                baselineValues.push(baselineValue);
+            });
+        }
         
         return baselineValues;
     }
@@ -434,17 +867,25 @@ class TradingSimulator {
         const tableBody = document.getElementById('tradesTableBody');
         tableBody.innerHTML = '';
         
+        if (!trades || trades.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No trades yet</td></tr>';
+            return;
+        }
+        
         trades.slice(-10).reverse().forEach(trade => {
             const row = document.createElement('tr');
             row.className = `trade-row trade-${trade.type}`;
             
+            const time = new Date(trade.time).toLocaleString();
+            const typeClass = trade.type === 'buy' ? 'badge-success' : 'badge-danger';
+            
             row.innerHTML = `
-                <td>${new Date(trade.time).toLocaleString()}</td>
-                <td>${trade.symbol}</td>
-                <td><span class="badge badge-${trade.type === 'buy' ? 'success' : 'danger'}">${trade.type.toUpperCase()}</span></td>
-                <td>$${trade.price.toFixed(2)}</td>
+                <td><i class="fas fa-clock"></i> ${time}</td>
+                <td><strong>${trade.symbol}</strong></td>
+                <td><span class="badge ${typeClass}">${trade.type.toUpperCase()}</span></td>
+                <td><strong>$${trade.price.toFixed(2)}</strong></td>
                 <td>${trade.quantity}</td>
-                <td>$${(trade.price * trade.quantity).toFixed(2)}</td>
+                <td><strong>$${(trade.price * trade.quantity).toFixed(2)}</strong></td>
             `;
             
             tableBody.appendChild(row);
@@ -453,8 +894,28 @@ class TradingSimulator {
     
     updateCurrentPrice(data) {
         const priceElement = document.getElementById('currentPrice');
-        if (priceElement) {
-            priceElement.textContent = `$${data.current_price.toFixed(2)}`;
+        if (priceElement && data.prices && data.prices.length > 0) {
+            const currentPrice = data.prices[data.prices.length - 1];
+            priceElement.textContent = `$${currentPrice.toFixed(2)}`;
+            
+            // Add price change indicator
+            if (data.prices.length > 1) {
+                const previousPrice = data.prices[data.prices.length - 2];
+                const change = currentPrice - previousPrice;
+                const changePercent = (change / previousPrice) * 100;
+                
+                const changeElement = document.getElementById('priceChange');
+                if (changeElement) {
+                    const changeClass = change >= 0 ? 'text-success' : 'text-danger';
+                    const changeIcon = change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                    changeElement.innerHTML = `
+                        <span class="${changeClass}">
+                            <i class="fas ${changeIcon}"></i>
+                            ${change >= 0 ? '+' : ''}$${change.toFixed(2)} (${changePercent.toFixed(2)}%)
+                        </span>
+                    `;
+                }
+            }
         }
     }
     
@@ -462,6 +923,63 @@ class TradingSimulator {
         const valueElement = document.getElementById('portfolioValue');
         if (valueElement) {
             valueElement.textContent = `$${currentValue.toFixed(2)}`;
+            
+            // Calculate and display return
+            const returnAmount = currentValue - this.initialCash;
+            const returnPercent = (returnAmount / this.initialCash) * 100;
+            
+            const returnElement = document.getElementById('portfolioReturn');
+            if (returnElement) {
+                const returnClass = returnAmount >= 0 ? 'text-success' : 'text-danger';
+                const returnIcon = returnAmount >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                returnElement.innerHTML = `
+                    <span class="${returnClass}">
+                        <i class="fas ${returnIcon}"></i>
+                        ${returnAmount >= 0 ? '+' : ''}$${returnAmount.toFixed(2)} (${returnPercent.toFixed(2)}%)
+                    </span>
+                `;
+            }
+        }
+    }
+    
+    async updateStats(trades) {
+        if (!trades) return;
+        
+        try {
+            const response = await fetch('/api/performance-metrics');
+            if (response.ok) {
+                const metrics = await response.json();
+                
+                document.getElementById('totalTrades').textContent = metrics.total_trades;
+                document.getElementById('winRate').textContent = `${metrics.win_rate.toFixed(1)}%`;
+                document.getElementById('totalReturn').textContent = `$${metrics.total_return.toFixed(2)}`;
+                document.getElementById('returnPercentage').textContent = `${metrics.total_return_percentage.toFixed(2)}%`;
+                document.getElementById('maxDrawdown').textContent = `${metrics.max_drawdown.toFixed(2)}%`;
+                document.getElementById('currentValue').textContent = `$${metrics.current_value.toFixed(2)}`;
+                
+                // Color code the return percentage
+                const returnElement = document.getElementById('returnPercentage');
+                if (metrics.is_profitable) {
+                    returnElement.style.color = this.chartColors.success;
+                } else {
+                    returnElement.style.color = this.chartColors.danger;
+                }
+                
+                document.getElementById('statsRow').style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('Error fetching performance metrics:', error);
+        }
+    }
+    
+    updateRealTimeIndicator(elementId, message = 'Live Updates') {
+        const element = document.getElementById(elementId);
+        if (element) {
+            const timestamp = new Date().toLocaleTimeString();
+            element.innerHTML = `
+                <span class="real-time-indicator"></span>
+                <span>${message} - Last: ${timestamp}</span>
+            `;
         }
     }
     
@@ -487,13 +1005,12 @@ class TradingSimulator {
     
     toggleHistoricalMode(enabled) {
         const dateInput = document.getElementById('selectedDate');
-        dateInput.disabled = !enabled;
-        
-        if (enabled) {
-            dateInput.required = true;
-        } else {
-            dateInput.required = false;
-            dateInput.value = '';
+        if (dateInput) {
+            dateInput.disabled = !enabled;
+            dateInput.required = enabled;
+            if (!enabled) {
+                dateInput.value = '';
+            }
         }
     }
     
@@ -513,16 +1030,35 @@ class TradingSimulator {
         }
     }
     
+    resetCharts() {
+        // Reset charts to empty state with helpful messages
+        this.updateStockChart({ timestamps: [], prices: [], short_ma: [], long_ma: [], signals: [] });
+        this.updatePortfolioChart({ timestamps: [], values: [], prices: [], initial_cash: this.initialCash });
+        
+        // Update status indicators
+        this.updateRealTimeIndicator('stockUpdateStatus', 'Charts cleared');
+        this.updateRealTimeIndicator('portfolioUpdateStatus', 'Charts cleared');
+    }
+    
+    resizeCharts() {
+        // Resize charts on window resize
+        if (this.charts.stockChart) {
+            Plotly.Plots.resize('stockChart');
+        }
+        if (this.charts.portfolioChart) {
+            Plotly.Plots.resize('portfolioChart');
+        }
+    }
+    
     showAlert(message, type) {
         const alertContainer = document.getElementById('alertContainer');
         const alertId = 'alert-' + Date.now();
         
         const alertHtml = `
             <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
                 ${message}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
         

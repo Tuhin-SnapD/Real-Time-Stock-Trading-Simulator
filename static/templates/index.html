@@ -9,216 +9,629 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #ff006e;
+            --accent-success: #00ff88;
+            --accent-danger: #ff4757;
+            --accent-warning: #ffa502;
+            --text-primary: #ffffff;
+            --text-secondary: #ffffff;
+            --text-muted: #ffffff;
+            --border-color: #333333;
+            --border-accent: #00d4ff;
+            --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-accent: 0 0 20px rgba(0, 212, 255, 0.3);
+            --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            --gradient-danger: linear-gradient(135deg, #ff006e 0%, #ff4757 100%);
+            --gradient-success: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
         }
-        
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Geometric background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 48%, var(--border-color) 50%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, var(--border-color) 50%, transparent 52%);
+            background-size: 60px 60px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 0;
+            box-shadow: var(--shadow-dark);
             margin: 20px;
             padding: 30px;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
         }
-        
+
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-primary);
+            z-index: -1;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+        }
+
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            color: #2c3e50;
+            margin-bottom: 40px;
+            position: relative;
         }
-        
+
         .header h1 {
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            font-size: 2.8rem;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px var(--accent-primary);
+            position: relative;
         }
-        
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-primary);
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
+        }
+
         .header p {
-            color: #7f8c8d;
+            color: var(--text-secondary) !important;
             font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500 !important;
         }
-        
+
         .control-panel {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 0;
+            padding: 30px;
             margin-bottom: 30px;
-            border: 1px solid #e9ecef;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
         }
-        
+
+        .control-panel::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-primary);
+            z-index: -1;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+            opacity: 0.3;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-        
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select {
+            background: var(--bg-primary) !important;
+            border: 2px solid var(--border-color) !important;
+            border-radius: 0 !important;
+            color: var(--text-primary) !important;
+            padding: 15px !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-primary) !important;
+            box-shadow: var(--shadow-accent) !important;
+            outline: none !important;
+            background: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .form-control-plaintext {
+            background: var(--bg-primary) !important;
+            border: 2px solid var(--border-color) !important;
+            border-radius: 0 !important;
+            padding: 15px !important;
+            color: var(--text-secondary) !important;
+            font-weight: 500 !important;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+        }
+
+        /* Override Bootstrap form styles */
+        .form-control::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.7 !important;
+        }
+
+        .form-select option {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+        }
+
+        .btn {
+            border-radius: 0;
+            font-weight: 700;
+            padding: 15px 30px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
         .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-accent);
         }
-        
+
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            border-color: var(--accent-primary);
         }
-        
+
         .btn-danger {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            background: var(--gradient-danger);
+            color: var(--text-primary);
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.3);
         }
-        
+
         .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(255, 0, 110, 0.5);
+            border-color: var(--accent-secondary);
         }
-        
+
         .status-indicator {
             display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 0;
+            margin-right: 10px;
+            position: relative;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
         }
-        
+
         .status-running {
-            background-color: #28a745;
-            animation: pulse 2s infinite;
+            background: var(--accent-success);
+            animation: geometricPulse 2s infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
         }
-        
+
         .status-stopped {
-            background-color: #dc3545;
+            background: var(--accent-danger);
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
         }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+
+        @keyframes geometricPulse {
+            0% {
+                transform: scale(0.8) rotate(0deg);
+                box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            }
+            50% {
+                transform: scale(1.2) rotate(180deg);
+                box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+            }
+            100% {
+                transform: scale(0.8) rotate(360deg);
+                box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            }
         }
-        
+
         .chart-container {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 0;
+            padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-dark);
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
         }
-        
-        .trades-table {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-primary);
+            z-index: -1;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+            opacity: 0.2;
         }
-        
-        .table {
-            margin-bottom: 0;
-        }
-        
-        .table th {
-            border-top: none;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .badge-buy {
-            background-color: #28a745;
-            color: white;
-        }
-        
-        .badge-sell {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-        }
-        
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .stats-card h3 {
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-                 .stats-card p {
-             margin-bottom: 0;
-             font-size: 1.2em;
-         }
-         
-         .form-control-plaintext {
-             background-color: #f8f9fa;
-             border: 1px solid #e9ecef;
-             border-radius: 0.375rem;
-             padding: 0.375rem 0.75rem;
-         }
-         
-         .text-primary {
-             color: #667eea !important;
-         }
-         
-         .form-select {
-             border: 2px solid #e9ecef;
-             border-radius: 10px;
-             transition: all 0.3s ease;
-         }
-         
-         .form-select:focus {
-             border-color: #667eea;
-             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-         }
-         
-                 .form-select option {
-            padding: 8px;
-        }
-        
-        .real-time-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #28a745;
-            border-radius: 50%;
-            margin-left: 8px;
-            animation: realTimePulse 1s infinite;
-        }
-        
-        @keyframes realTimePulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        
+
         .chart-title {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
         }
-        
+
         .chart-title h4 {
             margin: 0;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
+
+        .chart-title i {
+            margin-right: 10px;
+            color: var(--accent-primary);
+        }
+
         .update-status {
             font-size: 0.8em;
-            color: #6c757d;
+            color: var(--text-secondary) !important;
             display: flex;
             align-items: center;
+            background: var(--bg-primary);
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+            font-weight: 500 !important;
+        }
+
+        .real-time-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-success);
+            border-radius: 0;
+            margin-right: 8px;
+            animation: geometricRealTime 1.5s infinite;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        @keyframes geometricRealTime {
+            0% {
+                transform: scale(1) rotate(0deg);
+                box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+                box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            }
+        }
+
+        .trades-table {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 0;
+            padding: 25px;
+            box-shadow: var(--shadow-dark);
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+        }
+
+        .trades-table::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-primary);
+            z-index: -1;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+            opacity: 0.2;
+        }
+
+        .trades-table h4 {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table {
+            margin-bottom: 0;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 700 !important;
+            color: var(--text-primary) !important;
+            background: var(--bg-primary) !important;
+            padding: 15px 12px !important;
+            border-bottom: 2px solid var(--border-color) !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem !important;
+        }
+
+        .table td {
+            padding: 12px !important;
+            vertical-align: middle !important;
+            border-top: 1px solid var(--border-color) !important;
+            color: var(--text-secondary) !important;
+            font-weight: 500 !important;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: var(--bg-primary);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 0;
+            font-weight: 700;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+        }
+
+        .badge-buy {
+            background: var(--gradient-success);
+            color: var(--text-primary);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .badge-sell {
+            background: var(--gradient-danger);
+            color: var(--text-primary);
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
+        }
+
+        .stats-card {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 0;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-dark);
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+            transition: all 0.3s ease;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-primary);
+            z-index: -1;
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+            opacity: 0.3;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+        }
+
+        .stats-card h3 {
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary) !important;
+        }
+
+        .stats-card p {
+            margin-bottom: 0;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .text-primary {
+            color: var(--accent-primary) !important;
+        }
+
+        .text-success {
+            color: var(--accent-success) !important;
+        }
+
+        .text-danger {
+            color: var(--accent-danger) !important;
+        }
+
+        .text-warning {
+            color: var(--accent-warning) !important;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        .text-info {
+            color: var(--accent-primary) !important;
+        }
+
+        /* Override Bootstrap text colors */
+        .text-center {
+            text-align: center !important;
+        }
+
+        .text-center.text-muted {
+            color: var(--text-muted) !important;
+            font-weight: 500 !important;
+        }
+
+        /* Ensure all text is readable */
+        body, .container-fluid, .main-container {
+            color: var(--text-primary) !important;
+        }
+
+        /* Table text readability */
+        .table td, .table th {
+            color: inherit !important;
+            font-weight: 500 !important;
+        }
+
+        /* Small text readability */
+        small, .small {
+            color: var(--text-secondary) !important;
+            font-weight: 500 !important;
+        }
+
+        /* Form text readability */
+        .form-text {
+            color: var(--text-muted) !important;
+            font-weight: 500 !important;
+        }
+
+        /* Modal styling */
+        .modal-content {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 0;
+            color: var(--text-primary);
+        }
+
+        .modal-header {
+            border-bottom: 2px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .modal-footer {
+            border-top: 2px solid var(--border-color);
+            background: var(--bg-primary);
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .control-panel {
+                padding: 20px;
+            }
+            
+            .chart-container {
+                padding: 15px;
+            }
+            
+            .stats-card {
+                padding: 20px;
+            }
+            
+            .stats-card p {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 0;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
         }
     </style>
 </head>
@@ -548,7 +961,7 @@
                 type: 'scatter',
                 mode: 'lines',
                 name: 'Price',
-                line: { color: '#667eea' }
+                line: { color: '#00d4ff' }
             };
 
             const layout = {
@@ -556,7 +969,10 @@
                 xaxis: { title: 'Time' },
                 yaxis: { title: 'Price ($)' },
                 showlegend: true,
-                height: 400
+                height: 400,
+                plot_bgcolor: 'rgba(42,42,42,0.8)',
+                paper_bgcolor: 'rgba(42,42,42,0.8)',
+                font: { color: '#ffffff' }
             };
 
             stockChart = Plotly.newPlot('stockChart', [stockData], layout);
@@ -568,7 +984,7 @@
                 type: 'scatter',
                 mode: 'lines',
                 name: 'Portfolio Value',
-                line: { color: '#28a745' }
+                line: { color: '#00ff88' }
             };
 
             const portfolioLayout = {
@@ -576,7 +992,10 @@
                 xaxis: { title: 'Time' },
                 yaxis: { title: 'Value ($)' },
                 showlegend: true,
-                height: 300
+                height: 300,
+                plot_bgcolor: 'rgba(42,42,42,0.8)',
+                paper_bgcolor: 'rgba(42,42,42,0.8)',
+                font: { color: '#ffffff' }
             };
 
             portfolioChart = Plotly.newPlot('portfolioChart', [portfolioData], portfolioLayout);
@@ -599,9 +1018,9 @@
                     type: 'scatter',
                     mode: 'lines',
                     name: 'Price',
-                    line: { color: '#667eea', width: 3, shape: 'spline' },
+                    line: { color: '#00d4ff', width: 3, shape: 'spline' },
                     fill: 'tonexty',
-                    fillcolor: 'rgba(102, 126, 234, 0.1)'
+                    fillcolor: 'rgba(0, 212, 255, 0.1)'
                 },
                 {
                     x: data.timestamps,
@@ -609,7 +1028,7 @@
                     type: 'scatter',
                     mode: 'lines',
                     name: 'Short MA',
-                    line: { color: '#ff6b6b', width: 2, dash: 'dot' }
+                    line: { color: '#ff006e', width: 2, dash: 'dot' }
                 },
                 {
                     x: data.timestamps,
@@ -617,7 +1036,7 @@
                     type: 'scatter',
                     mode: 'lines',
                     name: 'Long MA',
-                    line: { color: '#feca57', width: 2, dash: 'dash' }
+                    line: { color: '#00ff88', width: 2, dash: 'dash' }
                 }
             ];
 
@@ -648,7 +1067,7 @@
                         marker: { 
                             symbol: 'triangle-up', 
                             size: 18, 
-                            color: '#28a745',
+                            color: '#00ff88',
                             line: { width: 2, color: '#ffffff' }
                         }
                     });
@@ -664,7 +1083,7 @@
                         marker: { 
                             symbol: 'triangle-down', 
                             size: 18, 
-                            color: '#dc3545',
+                            color: '#ff006e',
                             line: { width: 2, color: '#ffffff' }
                         }
                     });
@@ -675,29 +1094,36 @@
             const layout = {
                 title: {
                     text: `${getCurrentSymbol()} Real-Time Price & Trading Signals`,
-                    font: { size: 18, color: '#2c3e50' }
+                    font: { size: 18, color: '#ffffff' }
                 },
                 xaxis: { 
                     title: 'Time',
                     rangeslider: { visible: false },
                     showgrid: true,
-                    gridcolor: 'rgba(0,0,0,0.1)'
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    color: '#b0b0b0',
+                    titlefont: { color: '#b0b0b0' }
                 },
                 yaxis: { 
                     title: 'Price ($)',
                     showgrid: true,
-                    gridcolor: 'rgba(0,0,0,0.1)',
-                    autorange: true // Enable auto-scaling
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    autorange: true, // Enable auto-scaling
+                    color: '#b0b0b0',
+                    titlefont: { color: '#b0b0b0' }
                 },
                 showlegend: true,
                 height: 400,
                 margin: { l: 60, r: 60, t: 60, b: 60 },
-                plot_bgcolor: 'rgba(255,255,255,0.8)',
-                paper_bgcolor: 'rgba(255,255,255,0.8)',
+                plot_bgcolor: 'rgba(42,42,42,0.8)',
+                paper_bgcolor: 'rgba(42,42,42,0.8)',
                 hovermode: 'x unified',
                 transition: {
                     duration: 300,
                     easing: 'cubic-in-out'
+                },
+                legend: {
+                    font: { color: '#ffffff' }
                 }
             };
 
@@ -719,9 +1145,9 @@
                 type: 'scatter',
                 mode: 'lines',
                 name: 'Portfolio Value',
-                line: { color: '#28a745', width: 4, shape: 'spline' },
+                line: { color: '#00ff88', width: 4, shape: 'spline' },
                 fill: 'tonexty',
-                fillcolor: 'rgba(40, 167, 69, 0.1)'
+                fillcolor: 'rgba(0, 255, 136, 0.1)'
             };
 
             // Calculate baseline (buy & hold strategy)
@@ -732,36 +1158,43 @@
                 type: 'scatter',
                 mode: 'lines',
                 name: 'Baseline (Buy & Hold)',
-                line: { color: '#95a5a6', width: 2, dash: 'dot' },
+                line: { color: '#666666', width: 2, dash: 'dot' },
                 opacity: 0.7
             };
 
             const layout = {
                 title: {
                     text: `${getCurrentSymbol()} Real-Time Portfolio Value`,
-                    font: { size: 16, color: '#2c3e50' }
+                    font: { size: 16, color: '#ffffff' }
                 },
                 xaxis: { 
                     title: 'Time',
                     rangeslider: { visible: false },
                     showgrid: true,
-                    gridcolor: 'rgba(0,0,0,0.1)'
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    color: '#b0b0b0',
+                    titlefont: { color: '#b0b0b0' }
                 },
                 yaxis: { 
                     title: 'Value ($)',
                     showgrid: true,
-                    gridcolor: 'rgba(0,0,0,0.1)',
-                    autorange: true // Enable auto-scaling
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    autorange: true, // Enable auto-scaling
+                    color: '#b0b0b0',
+                    titlefont: { color: '#b0b0b0' }
                 },
                 showlegend: true,
                 height: 300,
                 margin: { l: 60, r: 60, t: 60, b: 60 },
-                plot_bgcolor: 'rgba(255,255,255,0.8)',
-                paper_bgcolor: 'rgba(255,255,255,0.8)',
+                plot_bgcolor: 'rgba(42,42,42,0.8)',
+                paper_bgcolor: 'rgba(42,42,42,0.8)',
                 hovermode: 'x unified',
                 transition: {
                     duration: 300,
                     easing: 'cubic-in-out'
+                },
+                legend: {
+                    font: { color: '#ffffff' }
                 }
             };
 
@@ -783,24 +1216,42 @@
             // Use actual price data if available, otherwise estimate
             if (data.prices && data.prices.length > 0) {
                 const firstPrice = data.prices[0];
-                const sharesOwned = initialCash / firstPrice;
-                
-                data.prices.forEach((price, index) => {
-                    const baselineValue = sharesOwned * price;
-                    baselineValues.push(baselineValue);
-                });
+                if (firstPrice > 0) {  // Avoid division by zero
+                    const sharesOwned = initialCash / firstPrice;
+                    
+                    data.prices.forEach((price, index) => {
+                        if (price > 0) {  // Ensure valid price
+                            const baselineValue = sharesOwned * price;
+                            baselineValues.push(baselineValue);
+                        } else {
+                            baselineValues.push(initialCash);  // Fallback to initial cash
+                        }
+                    });
+                } else {
+                    // If first price is invalid, use initial cash for all values
+                    data.prices.forEach(() => {
+                        baselineValues.push(initialCash);
+                    });
+                }
             } else {
                 // Fallback: estimate based on portfolio value changes
                 const firstValue = data.values[0];
-                const firstPrice = firstValue / initialCash; // Estimate initial price
-                
-                data.values.forEach((value, index) => {
-                    // Estimate current price based on portfolio value
-                    const currentPrice = value / initialCash;
-                    const sharesOwned = initialCash / firstPrice;
-                    const baselineValue = sharesOwned * currentPrice;
-                    baselineValues.push(baselineValue);
-                });
+                if (firstValue > 0 && initialCash > 0) {
+                    const firstPrice = firstValue / initialCash; // Estimate initial price
+                    
+                    data.values.forEach((value, index) => {
+                        // Estimate current price based on portfolio value
+                        const currentPrice = value / initialCash;
+                        const sharesOwned = initialCash / firstPrice;
+                        const baselineValue = sharesOwned * currentPrice;
+                        baselineValues.push(baselineValue);
+                    });
+                } else {
+                    // If values are invalid, use initial cash for all values
+                    data.values.forEach(() => {
+                        baselineValues.push(initialCash);
+                    });
+                }
             }
             
             return baselineValues;
@@ -998,10 +1449,10 @@
                 
                 if (selectedDate) {
                     statusText.textContent = 'Simulator Status: Running (Historical Mode)';
-                    indicator.style.animation = 'pulse 1s infinite'; // Faster pulse for historical mode
+                    indicator.style.animation = 'geometricPulse 1s infinite'; // Faster pulse for historical mode
                 } else {
                     statusText.textContent = 'Simulator Status: Running';
-                    indicator.style.animation = 'pulse 2s infinite'; // Normal pulse for real-time
+                    indicator.style.animation = 'geometricPulse 2s infinite'; // Normal pulse for real-time
                 }
                 
                 let configText = `Trading ${symbol} | ${interval} intervals | ${period} period | $${initialCash} initial cash`;

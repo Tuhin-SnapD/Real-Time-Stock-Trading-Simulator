@@ -1,44 +1,84 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from src.api.routes import api_bp
-import os
+from src.utils.config import get_config
+import logging
 
 def create_app():
     """Application factory pattern for creating Flask app."""
-    app = Flask(__name__, 
-                template_folder='static/templates',
-                static_folder='static')
-    
-    # Register blueprints
-    app.register_blueprint(api_bp)
-    
-    # Configure app
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-    app.config['DEBUG'] = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    try:
+        # Get configuration
+        config = get_config()
+        
+        # Validate configuration
+        if not config.validate():
+            raise ValueError("Invalid configuration. Check logs for details.")
+        
+        app = Flask(__name__, 
+                    template_folder='static/templates',
+                    static_folder='static')
+        
+        # Configure app with validated settings
+        flask_config = config.get_flask_config()
+        app.config.update(flask_config)
+        
+        # Register blueprints
+        app.register_blueprint(api_bp)
+    except Exception as e:
+        logging.error(f"Failed to create Flask app: {e}")
+        raise
     
     @app.route('/')
     def index():
         """Main dashboard route."""
-        return render_template('index.html')
+        try:
+            return render_template('index.html')
+        except Exception as e:
+            logging.error(f"Error rendering index template: {e}")
+            return render_template('500.html'), 500
     
     @app.errorhandler(404)
     def not_found(error):
         """Handle 404 errors."""
+        logging.warning(f"404 error: {request.url}")
         return render_template('404.html'), 404
     
     @app.errorhandler(500)
     def internal_error(error):
         """Handle 500 errors."""
+        logging.error(f"500 error: {error}")
+        return render_template('500.html'), 500
+    
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        """Handle unhandled exceptions."""
+        logging.error(f"Unhandled exception: {e}")
         return render_template('500.html'), 500
     
     return app
 
 if __name__ == '__main__':
-    app = create_app()
-    port = int(os.environ.get('PORT', 5000))
-    debug = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
-    
-    print("🚀 Starting Real-Time Stock Trading Simulator...")
-    print(f"📊 Dashboard available at: http://localhost:{port}")
-    print(f"🔧 Debug mode: {debug}")
-    
-    app.run(host='0.0.0.0', port=port, debug=debug) 
+    try:
+        # Get configuration
+        config = get_config()
+        
+        # Create app
+        app = create_app()
+        
+        # Get server settings
+        host = config.flask.host
+        port = config.flask.port
+        debug = config.flask.debug
+        
+        print("🚀 Starting Real-Time Stock Trading Simulator...")
+        print(f"📊 Dashboard available at: http://{host}:{port}")
+        print(f"🔧 Debug mode: {debug}")
+        print(f"📈 Trading symbol: {config.trading.default_symbol}")
+        print(f"💰 Initial cash: ${config.trading.default_initial_cash:,.2f}")
+        
+        # Start the application
+        app.run(host=host, port=port, debug=debug)
+        
+    except Exception as e:
+        logging.error(f"Failed to start application: {e}")
+        print(f"❌ Failed to start application: {e}")
+        exit(1) 
